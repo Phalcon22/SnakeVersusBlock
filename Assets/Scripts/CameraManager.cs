@@ -8,50 +8,39 @@ public class CameraManager : MonoBehaviour
 
     bool waitMode = false;
 
-    Rigidbody rb;
+    Transform tr;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        tr = transform;
         Vector3 startPos = snake.GetPos();
-        startPos.y = rb.position.y;
-        rb.position = startPos;
+        startPos.y = tr.position.y;
+        tr.position = startPos;
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        float ahead = rb.position.z - snake.GetPos().z;
-        
+        float ahead = tr.position.z - snake.GetPos().z;
+
+        if (ahead >= 2)
+            waitMode = true;
+
         if (waitMode)
         {
             if (Mathf.Abs(ahead) < 0.1f)
             {
                 waitMode = false;
                 Vector3 startPos = snake.GetPos();
-                startPos.x = rb.position.x;
-                startPos.y = rb.position.y;
-                rb.position = startPos;
+                startPos.x = tr.position.x;
+                startPos.y = tr.position.y;
+                tr.position = startPos;
             }
-            else
-            {
-                Vector3 velo = snake.GetVelocity() * 0.5f;
-                velo.x = 0;
-                rb.velocity = velo;
-            }
-        }
-        else if (ahead >= 1)
-        {
-            waitMode = true;
         }
         else
         {
-            /*Vector3 startPos = snake.GetPos();
-            startPos.x = rb.position.x;
-            startPos.y = rb.position.y;
-            rb.position = startPos;*/
-            Vector3 velo = snake.GetVelocity();
-            velo.x = 0;
-            rb.velocity = velo;
+            var rb = GetComponent<Rigidbody>();
+            var translation = new Vector3(0, 0, Snake.verticalSpeed) * Time.deltaTime;
+            rb.MovePosition(rb.position + translation);
         }
     }
 }

@@ -9,8 +9,8 @@ public class Snake : MonoBehaviour
     public SnakeHead headPrefab;
     public SnakePart partPrefab;
 
-    public static float verticalSpeed = 0.24f;
-    public static float horizontalSpeed = 0.60f;
+    public static float verticalSpeed = 8f;
+    public static float horizontalSpeed = 8f;
 
     void Start()
     {
@@ -27,11 +27,11 @@ public class Snake : MonoBehaviour
     void Update()
     {
         snakeParts[0].GetComponent<SnakeHead>().UpdateMouse();
+        Move();
     }
 
     void FixedUpdate()
     {
-        Move();
     }
 
     void AddPart()
@@ -47,7 +47,7 @@ public class Snake : MonoBehaviour
         if (snakeParts.Count == 0)
             return Vector3.zero;
 
-        return snakeParts[0].GetComponent<Rigidbody>().position;
+        return snakeParts[0].transform.position;
     }
 
     public Vector3 GetVelocity()
@@ -78,31 +78,31 @@ public class Snake : MonoBehaviour
 
     void Move()
     {
-        bool moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
 
+        bool moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
         for (int i = 1; i < snakeParts.Count; i++)
         {
-            Transform cur = snakeParts[i].transform;
-            Transform prev = snakeParts[i - 1].transform;
+            var cur = snakeParts[i].GetComponent<Rigidbody>();
+            Vector3 prev = snakeParts[i - 1].transform.position;
 
-            if (i - 1 == 0)
+            /*if (i - 1 == 0)
             {
-                prev = snakeParts[i - 1].GetComponent<Rigidbody>().transform;
-            }
+                prev = snakeParts[i - 1].GetComponent<SnakeHead>().GetPos();
+            }*/
 
-            Vector3 newPos = prev.position;
+            Vector3 newPos = prev;
 
-            /*if (!moveZ)
-                newPos.z = cur.position.z;*/
+            if (!moveZ)
+                newPos.z = cur.position.z;
 
-            float dist = Vector3.Distance(prev.position, cur.position);
+            float dist = Vector3.Distance(prev, cur.position);
 
-            float T = dist / 0.1f * verticalSpeed;
+            float T = dist / 0.1f * verticalSpeed * Time.deltaTime;
 
-            if (T > 0.5f)
-                T = 0.5f;
+            /*if (T > 0.5f)
+                T = 0.5f;*/
 
-            cur.position = Vector3.Slerp(cur.position, newPos, T);
+            cur.MovePosition(Vector3.Slerp(cur.position, newPos, T));
         }
     }
 }
