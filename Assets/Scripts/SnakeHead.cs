@@ -85,8 +85,8 @@ namespace svb
             if (removePart)
             {
                 snake.RemovePart();
-                translation.z = -GameManager.m.rules.destructionRollBack;
-                Translate(new Vector3(0, 0, -GameManager.m.rules.destructionRollBack));
+                translation.z = -GameManager.m.rules.destructionRollBack * Time.deltaTime;
+                Translate(new Vector3(0, 0, -GameManager.m.rules.destructionRollBack * Time.deltaTime));
             }
 
             var powerUpColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask("PowerUp"));
@@ -100,7 +100,7 @@ namespace svb
 
             posHistory.Add(rb.position);
             List<float> f = new List<float>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
                 f.Add(Time.deltaTime);
             deltasHistory.Add(f);
 

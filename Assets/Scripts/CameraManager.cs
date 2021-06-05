@@ -6,7 +6,7 @@ namespace svb
 {
     public class CameraManager : MonoBehaviour
     {
-        public Snake snake;
+        Snake snake;
 
         Rigidbody rb;
 
@@ -17,6 +17,7 @@ namespace svb
 
         void Start()
         {
+            snake = GameManager.m.snake;
             rb = GetComponent<Rigidbody>();
 
             Vector3 startPos = snake.GetPos();
@@ -44,7 +45,11 @@ namespace svb
             }
             else
             {
-                var translation = new Vector3(0, 0, GameManager.m.rules.verticalSpeed) * Time.deltaTime;
+                float coef = 1;
+                if (dist >= 0.5f)
+                    coef = 0.5f;
+
+                var translation = new Vector3(0, 0, GameManager.m.rules.verticalSpeed) * Time.deltaTime * coef;
                 rb.MovePosition(rb.position + translation);
             }
 

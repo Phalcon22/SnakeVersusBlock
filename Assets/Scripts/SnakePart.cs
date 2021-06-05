@@ -48,6 +48,12 @@ namespace svb
             if (pause)
                 return;
 
+            if (i < 0)
+            {
+                i++;
+                return;
+            }
+
             float delta = Time.deltaTime;
             Vector3 pos;
             while (delta >= head.deltasHistory[i][index])
