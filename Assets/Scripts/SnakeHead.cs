@@ -40,7 +40,7 @@ public class SnakeHead : SnakePart
         return rb.position;
     }
 
-    public bool Move()
+    public float Move()
     {
         Vector3 translation = new Vector3(GetXTranslation(), 0, GetYTranslation());
         Vector3 h = new Vector3(translation.x, 0, 0);
@@ -71,7 +71,7 @@ public class SnakeHead : SnakePart
             f.Add(Time.deltaTime);
         deltasHistory.Add(f);
 
-        return translation.z > 0;
+        return translation.z;
     }
 
     float GetMouseX()

@@ -24,7 +24,6 @@ public class Snake : MonoBehaviour
 
         for (int i = 0; i < followers; i++)
             AddPart((i + 1) * 0.03f);
-
     }
 
     int i_ = 0;
@@ -37,14 +36,10 @@ public class Snake : MonoBehaviour
         Move();
     }
 
-    void FixedUpdate()
-    {
-    }
-
     void AddPart(float delay)
     {
         SnakePart newPart = Instantiate(partPrefab, snakeParts[0].transform.position, snakeParts[0].transform.rotation);
-        newPart.Init(delay);
+        newPart.Init(snakeParts[0].GetComponent<SnakeHead>(), delay);
 
         newPart.transform.SetParent(transform);
         snakeParts.Add(newPart);
@@ -55,16 +50,7 @@ public class Snake : MonoBehaviour
         if (snakeParts.Count == 0)
             return Vector3.zero;
 
-        return snakeParts[0].transform.position;
-    }
-
-    public Vector3 GetVelocity()
-    {
-        if (snakeParts.Count == 0)
-            return Vector3.zero;
-
-        return snakeParts[0].GetComponent<Rigidbody>().velocity;
-
+        return snakeParts[0].GetComponent<SnakeHead>().GetPos();
     }
 
     void RemovePart()
@@ -86,31 +72,11 @@ public class Snake : MonoBehaviour
 
     void Move()
     {
-        bool moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
+        var moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
+
         for (int i = 1; i <= followers; i++)
         {
-            snakeParts[i].tmp(snakeParts[0].GetComponent<SnakeHead>(), i - 1);
-        }
-        for (int i = 1; i < snakeParts.Count; i++)
-        {
-
-            /*
-            var cur = snakeParts[i].GetComponent<Rigidbody>();
-            Vector3 prev = snakeParts[i - 1].transform.position;
-
-            Vector3 newPos = prev;
-
-            if (!moveZ)
-                newPos.z = cur.position.z;
-
-            float dist = Vector3.Distance(prev, cur.position);
-
-            float T = dist / 0.1f * verticalSpeed * Time.deltaTime;
-
-            if (T > 0.5f)
-                T = 0.5f;
-
-            cur.MovePosition(Vector3.Slerp(cur.position, newPos, T));*/
+            snakeParts[i].Move(i - 1, moveZ);
         }
     }
 }
