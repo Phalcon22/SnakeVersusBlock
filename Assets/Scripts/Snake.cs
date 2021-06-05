@@ -12,6 +12,8 @@ public class Snake : MonoBehaviour
     public static float verticalSpeed = 8f;
     public static float horizontalSpeed = 8f;
 
+    public static int followers = 20;
+
     void Start()
     {
         SnakeHead head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
@@ -20,12 +22,17 @@ public class Snake : MonoBehaviour
         snakeParts.Add(head);
         head.transform.SetParent(transform);
 
-        for (int i = 0; i < 10; i++)
-            AddPart();
+        for (int i = 0; i < followers; i++)
+            AddPart((i + 1) * 0.03f);
+
     }
 
+    int i_ = 0;
     void Update()
     {
+        if (i_++ < 10000f * Time.deltaTime)
+            return;
+
         snakeParts[0].GetComponent<SnakeHead>().UpdateMouse();
         Move();
     }
@@ -34,9 +41,10 @@ public class Snake : MonoBehaviour
     {
     }
 
-    void AddPart()
+    void AddPart(float delay)
     {
-        SnakePart newPart = Instantiate(partPrefab, snakeParts[snakeParts.Count - 1].transform.position, snakeParts[snakeParts.Count - 1].transform.rotation);
+        SnakePart newPart = Instantiate(partPrefab, snakeParts[0].transform.position, snakeParts[0].transform.rotation);
+        newPart.Init(delay);
 
         newPart.transform.SetParent(transform);
         snakeParts.Add(newPart);
@@ -78,17 +86,17 @@ public class Snake : MonoBehaviour
 
     void Move()
     {
-
         bool moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
+        for (int i = 1; i <= followers; i++)
+        {
+            snakeParts[i].tmp(snakeParts[0].GetComponent<SnakeHead>(), i - 1);
+        }
         for (int i = 1; i < snakeParts.Count; i++)
         {
+
+            /*
             var cur = snakeParts[i].GetComponent<Rigidbody>();
             Vector3 prev = snakeParts[i - 1].transform.position;
-
-            /*if (i - 1 == 0)
-            {
-                prev = snakeParts[i - 1].GetComponent<SnakeHead>().GetPos();
-            }*/
 
             Vector3 newPos = prev;
 
@@ -99,10 +107,10 @@ public class Snake : MonoBehaviour
 
             float T = dist / 0.1f * verticalSpeed * Time.deltaTime;
 
-            /*if (T > 0.5f)
-                T = 0.5f;*/
+            if (T > 0.5f)
+                T = 0.5f;
 
-            cur.MovePosition(Vector3.Slerp(cur.position, newPos, T));
+            cur.MovePosition(Vector3.Slerp(cur.position, newPos, T));*/
         }
     }
 }

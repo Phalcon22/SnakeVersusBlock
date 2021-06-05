@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6003834515783230557}
   - component: {fileID: 6003834515783230558}
   - component: {fileID: 3384324265330943906}
-  - component: {fileID: 7526662808296169056}
+  - component: {fileID: -2247126200351542963}
   m_Layer: 0
   m_Name: SnakePartPrefab
   m_TagString: Untagged
@@ -95,7 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed44af592042b994587465df2a001ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!54 &7526662808296169056
+  start_: 20
+--- !u!54 &-2247126200351542963
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

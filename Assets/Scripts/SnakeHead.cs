@@ -9,10 +9,12 @@ public class SnakeHead : SnakePart
 
     float targetX;
 
-    Rigidbody rb;
     BoxCollider col;
 
     string[] obstacleLayers = { "Wall", "Block" };
+
+    public List<Vector3> posHistory = new List<Vector3>();
+    public List<List<float>> deltasHistory = new List<List<float>>();
 
     public void Init()
     {
@@ -51,6 +53,7 @@ public class SnakeHead : SnakePart
         {
             targetX = rb.position.x;
             Translate(-h);
+            translation.x = 0;
         }
 
         Translate(v);
@@ -61,6 +64,12 @@ public class SnakeHead : SnakePart
             Translate(-v);
             translation.z = 0;
         }
+
+        posHistory.Add(rb.position);
+        List<float> f = new List<float>();
+        for (int i = 0; i < Snake.followers; i++)
+            f.Add(Time.deltaTime);
+        deltasHistory.Add(f);
 
         return translation.z > 0;
     }
