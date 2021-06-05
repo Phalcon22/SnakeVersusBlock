@@ -13,7 +13,8 @@ public class Snake : MonoBehaviour
     public static float verticalSpeed = 8f;
     public static float horizontalSpeed = 8f;
 
-    public static int followers = 20;
+    int startFollowers = 4;
+    int followers = 0;
 
     bool pause = true;
     void Start()
@@ -22,8 +23,8 @@ public class Snake : MonoBehaviour
 
         head.Init(this);
 
-        for (int i = 0; i < followers; i++)
-            AddPart((i + 1) * 0.03f);
+        for (int i = 0; i < startFollowers; i++)
+            AddPart();
 
         StartCoroutine(PauseCoroutine(1));
     }
@@ -38,10 +39,11 @@ public class Snake : MonoBehaviour
         Move();
     }
 
-    void AddPart(float delay)
+    public void AddPart()
     {
+        followers++;
         SnakePart newPart = Instantiate(partPrefab, head.transform.position, head.transform.rotation);
-        newPart.Init(head, delay);
+        newPart.Init(head, followers * 0.03f);
 
         newPart.transform.SetParent(transform);
         snakeParts.Add(newPart);
@@ -74,7 +76,7 @@ public class Snake : MonoBehaviour
 
         for (int i = 0; i < followers; i++)
         {
-            snakeParts[i].Move(i, moveZ);
+            snakeParts[i].Move(i + 1, moveZ);
         }
     }
 

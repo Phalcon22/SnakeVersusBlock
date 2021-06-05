@@ -86,9 +86,17 @@ public class SnakeHead : SnakePart
             Translate(new Vector3(0, 0, -0.4f));
         }
 
+        var powerUpColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask("PowerUp"));
+
+        foreach (Collider powerUp in powerUpColliders)
+        {
+            snake.AddPart();
+            Destroy(powerUp.gameObject);
+        }
+
         posHistory.Add(rb.position);
         List<float> f = new List<float>();
-        for (int i = 0; i < Snake.followers; i++)
+        for (int i = 0; i < 100; i++)
             f.Add(Time.deltaTime);
         deltasHistory.Add(f);
 
