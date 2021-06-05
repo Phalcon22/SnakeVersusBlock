@@ -14,7 +14,7 @@ namespace svb
         Snake snake;
         BoxCollider col;
 
-        string[] obstacleLayers = { "Wall", "Block" };
+        string[] obstacleLayers = { "Wall", "Border", "Block" };
 
         public List<Vector3> posHistory = new List<Vector3>();
         public List<List<float>> deltasHistory = new List<List<float>>();

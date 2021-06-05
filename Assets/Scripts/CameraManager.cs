@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace svb
 {
-
     public class CameraManager : MonoBehaviour
     {
         public Snake snake;
@@ -12,6 +11,9 @@ namespace svb
         Rigidbody rb;
 
         bool waitMode = false;
+
+        public Rigidbody leftBorder;
+        public Rigidbody rightBorder;
 
         void Start()
         {
@@ -45,6 +47,14 @@ namespace svb
                 var translation = new Vector3(0, 0, GameManager.m.rules.verticalSpeed) * Time.deltaTime;
                 rb.MovePosition(rb.position + translation);
             }
+
+            Vector3 border = leftBorder.position;
+            border.z = rb.position.z;
+            leftBorder.position = border;
+
+            border = rightBorder.position;
+            border.z = rb.position.z;
+            rightBorder.position = border;
         }
     }
 }
