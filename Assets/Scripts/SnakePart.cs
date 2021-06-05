@@ -30,6 +30,12 @@ public class SnakePart : MonoBehaviour
 
     public void Move(int index, float moveZ)
     {
+        MoveX(index);
+        MoveZ(moveZ);
+    }
+
+    public void MoveX(int index)
+    {
         if (!started)
         {
             StartCoroutine(InitPauseCoroutine(delay));
@@ -44,7 +50,6 @@ public class SnakePart : MonoBehaviour
         while (delta >= head.deltasHistory[i][index])
         {
             pos = head.posHistory[i];
-            pos.z = rb.position.z;
 
             rb.MovePosition(pos);
             delta -= head.deltasHistory[i][index];
@@ -56,18 +61,23 @@ public class SnakePart : MonoBehaviour
 
         rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
         head.deltasHistory[i][index] -= delta;
+    }
 
-        rb.MovePosition(rb.position + new Vector3(0,0, moveZ));
+    public void MoveZ(float moveZ)
+    {
+        if (started && !pause)
+            rb.MovePosition(rb.position + new Vector3(0,0, moveZ));
     }
 
     IEnumerator InitPauseCoroutine(float seconds)
     {
         pause = true;
         yield return new WaitForSeconds(seconds);
-        pause = false;
 
         i = head.posHistory.Count - 1;
         for (float timer = 0; i >= 0 && timer <= delay; i--)
             timer += head.deltasHistory[i][0];
+
+        pause = false;
     }
 }

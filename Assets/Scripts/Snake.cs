@@ -42,7 +42,7 @@ public class Snake : MonoBehaviour
     public void AddPart()
     {
         followers++;
-        SnakePart newPart = Instantiate(partPrefab, head.transform.position, head.transform.rotation);
+        SnakePart newPart = Instantiate(partPrefab, Vector3.one * 1000, head.transform.rotation);
         newPart.Init(head, followers * 0.03f);
 
         newPart.transform.SetParent(transform);

@@ -736,6 +736,7 @@ GameObject:
   - component: {fileID: 1865192007}
   - component: {fileID: 1865192006}
   - component: {fileID: 1865192005}
+  - component: {fileID: 1865192009}
   m_Layer: 8
   m_Name: PowerUp
   m_TagString: Untagged
@@ -819,6 +820,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1865192009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865192004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b7581c6265bf14e945a0c515826a9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 5
 --- !u!1 &1971364315
 GameObject:
   m_ObjectHideFlags: 0

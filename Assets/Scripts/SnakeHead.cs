@@ -90,7 +90,8 @@ public class SnakeHead : SnakePart
 
         foreach (Collider powerUp in powerUpColliders)
         {
-            snake.AddPart();
+            for (int i = 0; i < powerUp.GetComponent<PowerUp>().amount; i++)
+                snake.AddPart();
             Destroy(powerUp.gameObject);
         }
 
