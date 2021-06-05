@@ -2,19 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RatioForcer : MonoBehaviour
+namespace svb
 {
-    float newAspectRatio = 0.5625f;
 
-    void Start()
+    public class RatioForcer : MonoBehaviour
     {
-        var variance = newAspectRatio / Camera.main.aspect;
-        if (variance < 1.0)
-            Camera.main.rect = new Rect((1 - variance) / 2f, 0, variance, 1);
-        else
+        float newAspectRatio = 0.5625f;
+
+        void Start()
         {
-            variance = 1.0f / variance;
-            Camera.main.rect = new Rect(0, (1 - variance) / 2f, 1, variance);
+            var variance = newAspectRatio / Camera.main.aspect;
+            if (variance < 1.0)
+                Camera.main.rect = new Rect((1 - variance) / 2f, 0, variance, 1);
+            else
+            {
+                variance = 1.0f / variance;
+                Camera.main.rect = new Rect(0, (1 - variance) / 2f, 1, variance);
+            }
         }
     }
 }

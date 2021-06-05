@@ -2,45 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+namespace svb
 {
-    public Snake snake;
 
-    Rigidbody rb;
-
-    bool waitMode = false;
-
-    void Start()
+    public class CameraManager : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody>();
+        public Snake snake;
 
-        Vector3 startPos = snake.GetPos();
-        startPos.y = rb.position.y;
-        rb.position = startPos;
-    }
+        Rigidbody rb;
 
-    void Update()
-    {
-        Vector3 pos = rb.position;
-        float ahead = pos.z - snake.GetPos().z;
+        bool waitMode = false;
 
-        if (ahead >= 2)
-            waitMode = true;
-
-        if (waitMode)
+        void Start()
         {
-            if (Mathf.Abs(ahead) < 0.1f)
-            {
-                waitMode = false;
-                Vector3 newPos = pos;
-                newPos.z = snake.GetPos().z;
-                rb.position = newPos;
-            }
+            rb = GetComponent<Rigidbody>();
+
+            Vector3 startPos = snake.GetPos();
+            startPos.y = rb.position.y;
+            rb.position = startPos;
         }
-        else
+
+        void Update()
         {
-            var translation = new Vector3(0, 0, Snake.verticalSpeed) * Time.deltaTime;
-            rb.MovePosition(rb.position + translation);
+            Vector3 pos = rb.position;
+            float dist = pos.z - snake.GetPos().z;
+
+            if (dist >= GameManager.m.rules.cameraMaxDistance)
+                waitMode = true;
+
+            if (waitMode)
+            {
+                if (Mathf.Abs(dist) < GameManager.m.rules.cameraSyncDist)
+                {
+                    waitMode = false;
+                    Vector3 newPos = pos;
+                    newPos.z = snake.GetPos().z;
+                    rb.position = newPos;
+                }
+            }
+            else
+            {
+                var translation = new Vector3(0, 0, GameManager.m.rules.verticalSpeed) * Time.deltaTime;
+                rb.MovePosition(rb.position + translation);
+            }
         }
     }
 }

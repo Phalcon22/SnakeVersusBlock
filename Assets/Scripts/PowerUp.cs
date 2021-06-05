@@ -2,7 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUp : MonoBehaviour
+namespace svb
 {
-    public int amount;
+
+    public class PowerUp : MonoBehaviour
+    {
+        public int amount;
+    }
+
 }
