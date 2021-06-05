@@ -9,6 +9,7 @@ public class SnakeHead : SnakePart
 
     float targetX;
 
+    Snake snake;
     BoxCollider col;
 
     string[] obstacleLayers = { "Wall", "Block" };
@@ -16,10 +17,13 @@ public class SnakeHead : SnakePart
     public List<Vector3> posHistory = new List<Vector3>();
     public List<List<float>> deltasHistory = new List<List<float>>();
 
-    public void Init()
+    public void Init(Snake snake)
     {
+        this.snake = snake;
         rb = GetComponent<Rigidbody>();
         col = GetComponent<BoxCollider>();
+
+        transform.SetParent(snake.transform);
     }
 
     public void UpdateMouse()
@@ -63,6 +67,23 @@ public class SnakeHead : SnakePart
         {
             Translate(-v);
             translation.z = 0;
+        }
+
+        bool removePart = false;
+        foreach (Collider col in verticalColliders)
+        {
+            if (LayerMask.LayerToName(col.gameObject.layer) == "Block")
+            {
+                removePart = true;
+                break;
+            }
+        }
+
+        if (removePart)
+        {
+            snake.RemovePart();
+            translation.z = -0.4f;
+            Translate(new Vector3(0, 0, -0.4f));
         }
 
         posHistory.Add(rb.position);

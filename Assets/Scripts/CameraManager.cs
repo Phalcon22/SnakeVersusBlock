@@ -6,21 +6,23 @@ public class CameraManager : MonoBehaviour
 {
     public Snake snake;
 
-    bool waitMode = false;
+    Rigidbody rb;
 
-    Transform tr;
+    bool waitMode = false;
 
     void Start()
     {
-        tr = transform;
+        rb = GetComponent<Rigidbody>();
+
         Vector3 startPos = snake.GetPos();
-        startPos.y = tr.position.y;
-        tr.position = startPos;
+        startPos.y = rb.position.y;
+        rb.position = startPos;
     }
 
     void Update()
     {
-        float ahead = tr.position.z - snake.GetPos().z;
+        Vector3 pos = rb.position;
+        float ahead = pos.z - snake.GetPos().z;
 
         if (ahead >= 2)
             waitMode = true;
@@ -30,15 +32,13 @@ public class CameraManager : MonoBehaviour
             if (Mathf.Abs(ahead) < 0.1f)
             {
                 waitMode = false;
-                Vector3 startPos = snake.GetPos();
-                startPos.x = tr.position.x;
-                startPos.y = tr.position.y;
-                tr.position = startPos;
+                Vector3 newPos = pos;
+                newPos.z = snake.GetPos().z;
+                rb.position = newPos;
             }
         }
         else
         {
-            var rb = GetComponent<Rigidbody>();
             var translation = new Vector3(0, 0, Snake.verticalSpeed) * Time.deltaTime;
             rb.MovePosition(rb.position + translation);
         }

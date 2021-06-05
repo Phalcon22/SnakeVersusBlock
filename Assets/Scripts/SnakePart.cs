@@ -6,6 +6,8 @@ public class SnakePart : MonoBehaviour
 {
     int i = 0;
 
+    bool started = false;
+    bool pause = true;
     float delay;
 
     protected Rigidbody rb;
@@ -19,19 +21,27 @@ public class SnakePart : MonoBehaviour
         this.delay = delay;
     }
 
+    public int GetMoveIndex()
+    {
+        return i;
+    }
+
     public void Move(int index, float moveZ)
     {
-        if (delay > Time.deltaTime / 2)
+        if (!started)
         {
-            delay -= Time.deltaTime;
-            return;
+            StartCoroutine(PauseCoroutine(delay));
+            started = true;
         }
 
-        delay = 0;
+        if (pause)
+            return;
+
         float delta = Time.deltaTime;
+        Vector3 pos;
         while (delta >= head.deltasHistory[i][index])
         {
-            Vector3 pos = head.posHistory[i];
+            pos = head.posHistory[i];
             pos.z = rb.position.z;
 
             rb.MovePosition(pos);
@@ -39,14 +49,20 @@ public class SnakePart : MonoBehaviour
             i++;
         }
 
-        if (delta > 0)
-        {
-            Vector3 pos = head.posHistory[i];
-            pos.z = rb.position.z;
+        pos = head.posHistory[i];
+        pos.z = rb.position.z;
 
-            rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
-            head.deltasHistory[i][index] -= delta;
-        }
+        rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
+        head.deltasHistory[i][index] -= delta;
+
+
         rb.MovePosition(rb.position + new Vector3(0,0, moveZ));
+    }
+
+    IEnumerator PauseCoroutine(float seconds)
+    {
+        pause = true;
+        yield return new WaitForSeconds(seconds);
+        pause = false;
     }
 }

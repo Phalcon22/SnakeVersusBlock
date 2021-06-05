@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
+    SnakeHead head = null;
     List<SnakePart> snakeParts = new List<SnakePart>();
 
     public SnakeHead headPrefab;
@@ -14,69 +15,81 @@ public class Snake : MonoBehaviour
 
     public static int followers = 20;
 
+    bool pause = true;
     void Start()
     {
-        SnakeHead head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
+        head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
 
-        head.Init();
-        snakeParts.Add(head);
-        head.transform.SetParent(transform);
+        head.Init(this);
 
         for (int i = 0; i < followers; i++)
             AddPart((i + 1) * 0.03f);
+
+        StartCoroutine(PauseCoroutine(1));
     }
 
-    int i_ = 0;
     void Update()
     {
-        if (i_++ < 10000f * Time.deltaTime)
+        head.UpdateMouse();
+
+        if (pause)
             return;
 
-        snakeParts[0].GetComponent<SnakeHead>().UpdateMouse();
         Move();
     }
 
     void AddPart(float delay)
     {
-        SnakePart newPart = Instantiate(partPrefab, snakeParts[0].transform.position, snakeParts[0].transform.rotation);
-        newPart.Init(snakeParts[0].GetComponent<SnakeHead>(), delay);
+        SnakePart newPart = Instantiate(partPrefab, head.transform.position, head.transform.rotation);
+        newPart.Init(head, delay);
 
         newPart.transform.SetParent(transform);
         snakeParts.Add(newPart);
     }
 
-    public Vector3 GetPos()
+    public void RemovePart()
     {
         if (snakeParts.Count == 0)
-            return Vector3.zero;
-
-        return snakeParts[0].GetComponent<SnakeHead>().GetPos();
-    }
-
-    void RemovePart()
-    {
-        if (snakeParts.Count == 1)
         {
             //loose
             return;
         }
 
-        SnakePart toRemove = snakeParts[1];
+        SnakePart toRemove = snakeParts[0];
 
-        SnakePart first = snakeParts[0];
+        head.GetComponent<Rigidbody>().position = toRemove.GetComponent<Rigidbody>().position;
 
-        first.transform.position = toRemove.transform.position;
+        int amount = head.posHistory.Count - (toRemove.GetMoveIndex() + 1);
+        head.posHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
+        head.deltasHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
 
-        snakeParts.RemoveAt(1);
+        followers--;
+        snakeParts.RemoveAt(0);
+        Destroy(toRemove.gameObject);
     }
 
     void Move()
     {
-        var moveZ = snakeParts[0].GetComponent<SnakeHead>().Move();
+        var moveZ = head.Move();
 
-        for (int i = 1; i <= followers; i++)
+        for (int i = 0; i < followers; i++)
         {
-            snakeParts[i].Move(i - 1, moveZ);
+            snakeParts[i].Move(i, moveZ);
         }
+    }
+
+    public Vector3 GetPos()
+    {
+        if (head == null)
+            return Vector3.zero;
+
+        return head.GetPos();
+    }
+
+    IEnumerator PauseCoroutine(float seconds)
+    {
+        pause = true;
+        yield return new WaitForSeconds(seconds);
+        pause = false;
     }
 }
