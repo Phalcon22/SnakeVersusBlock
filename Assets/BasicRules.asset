@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f0e1dbca5f14a64eb9e5a1784d2ebad, type: 3}
-  m_Name: New Rules
+  m_Name: BasicRules
   m_EditorClassIdentifier: 
   verticalSpeed: 8
   horizontalSpeed: 8
   delayBetweenParts: 0.03
   defaultFollowerAmount: 4
-  destructionRollBack: 0.4
+  destructionRollBack: 0.8
   cameraMaxDistance: 2
   cameraSyncDist: 0.1
