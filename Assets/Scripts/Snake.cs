@@ -41,8 +41,15 @@ public class Snake : MonoBehaviour
 
     public void AddPart()
     {
+        SnakePart prev = head;
+        if (snakeParts.Count > 0)
+            prev = snakeParts[snakeParts.Count - 1];
+
+        Vector3 prevPos = prev.GetComponent<Rigidbody>().position;
+        prevPos.z -= prev.GetComponent<BoxCollider>().bounds.extents.z * 2;
+
         followers++;
-        SnakePart newPart = Instantiate(partPrefab, Vector3.one * 1000, head.transform.rotation);
+        SnakePart newPart = Instantiate(partPrefab, prevPos, head.transform.rotation);
         newPart.Init(head, followers * 0.03f);
 
         newPart.transform.SetParent(transform);
