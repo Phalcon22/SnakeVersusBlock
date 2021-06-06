@@ -37,6 +37,11 @@ namespace svb
             Move();
         }
 
+        public int GetFollower()
+        {
+            return followers;
+        }
+
         public void AddPart()
         {
             SnakePart prev = head;

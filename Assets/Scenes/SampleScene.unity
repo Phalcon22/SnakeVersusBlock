@@ -132,6 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 27077144}
+  - component: {fileID: 27077145}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -147,12 +148,27 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27077143}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.7240357, y: 5.1280036, z: 0.06480688}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &27077145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27077143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e1c9515204288c4dab7d12d8174cf0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallPrefab: {fileID: 8286175536676742611, guid: 5dd0bbba23890d34a9a5d3f22a7c2c33, type: 3}
+  blockPrefab: {fileID: 3576219287226618113, guid: e97de50969da8554ea5e309f4ffcc0af, type: 3}
+  powerUpPrefab: {fileID: 987587671365298351, guid: b07cb0b9495a4c94c9d55053cd3e55fd, type: 3}
 --- !u!1 &623664013
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,9 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rules_: {fileID: 11400000, guid: a59bf3b743f5a86429405a8e9e599520, type: 2}
-  prefab: {fileID: 7928593470774287039, guid: 0136d71148dd4c64caac8db3f1fed22a, type: 3}
   snakePrefab: {fileID: 2188345699153249092, guid: 2857ceae57bc27c43a33d099a99a8f06, type: 3}
-  stage: {fileID: 27077144}
 --- !u!4 &1726912025
 Transform:
   m_ObjectHideFlags: 0
