@@ -36,12 +36,13 @@ namespace svb
         int snakeIndex;
         Vector3 snakePos;
 
+        const int columns = 5;
         const float lineHeight = 1.5f;
         const int ahead = 8;
 
         bool block;
 
-        bool[] lastLine = new bool[5];
+        bool[] lastLine = new bool[columns];
         GameObject[] line;
 
         System.Random rng;
@@ -65,8 +66,8 @@ namespace svb
             if (snake.GetPos().z >= nextZ)
             {
                 snakeIndex++;
-                snakePos = new Vector3((snake.GetPos().x + 3.0f)  % lineHeight, 0, snakeIndex);
-                line = new GameObject[5];
+                snakePos = new Vector3((snake.GetPos().x + 2 * lineHeight)  % lineHeight, 0, snakeIndex);
+                line = new GameObject[columns];
 
                 if (block)
                     GenerateBlockLine();
@@ -82,7 +83,7 @@ namespace svb
 
         public void CleanOldestLine()
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < columns; i++)
             {
                 if (obstacles[0][i] != null)
                     Destroy(obstacles[0][i]);
@@ -96,7 +97,7 @@ namespace svb
 
         public void GenerateBlockLine()
         {
-            bool[] curLine = new bool[5];
+            bool[] curLine = new bool[columns];
 
             int random = rng.Next(0, 100);
             if (random < 40)
@@ -110,8 +111,8 @@ namespace svb
             }
             else
             {
-                for (int i = 0; i < 5; i++)
-                    InstantiateBlock(i, GetZ());
+                for (int i = 0; i < columns; i++)
+                    line[i] = InstantiateBlock(i, GetZ());
             }
 
             obstacles.Add(line);
@@ -129,92 +130,32 @@ namespace svb
         {
             int random = rng.Next(0, 100);
 
-            bool[] notAvailable = new bool[5];
-            for (int i = 0; i < 5; i++)
-            {
-                if (line[i] != null)
-                {
-                    notAvailable[i] = true;
-                    if (i > 0)
-                        notAvailable[i - 1] = true;
-                    if (i < 4)
-                        notAvailable[i + 1] = true;
-                }
-            }
+            bool[] available = GetAvailableBlocks();
+            var followerSlots = new List<int>();
+            var nonFollowerSlots = new List<int>();
 
-            int followersSlot = 0;
-            int notFollowersSlot = 0;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < columns; i++)
             {
-                if (!notAvailable[i])
+                if (available[i])
                 {
-                    if (lastLine[i] || (i < 4 && lastLine[i + 1]))
-                        followersSlot++;
+                    if (lastLine[i] || (i < columns - 1 && lastLine[i + 1]))
+                        followerSlots.Add(i);
                     else
-                        notFollowersSlot++;
+                        nonFollowerSlots.Add(i);
                 }
             }
 
-            if (followersSlot > 0 && random < 79)
-                GenerateFollowerBlock(curLine, notAvailable, followersSlot);
+            List<int> slots;
+            if (followerSlots.Count > 0 && random < 79 || nonFollowerSlots.Count == 0)
+                slots = followerSlots;
             else
-                GenerateNonFollowerBlock(curLine, notAvailable, notFollowersSlot);
-        }
+                slots = nonFollowerSlots;
+           
+            random = rng.Next(0, slots.Count);
+            int index = slots[random];
 
-        public void GenerateFollowerBlock(bool[] curLine, bool[] notAvailable, int followersSlot)
-        {
-            int random = rng.Next(0, 100);
-            float ceil = 100f / followersSlot;
-            for (int i = 0; i < 5; i++)
-            {
-                if (!notAvailable[i] && (lastLine[i] || (i < 4 && lastLine[i + 1])))
-                {
-                    if (random < ceil)
-                    {
-                        curLine[i] = true;
-
-                        notAvailable[i] = true;
-                        if (i > 0)
-                            notAvailable[i - 1] = true;
-                        if (i < 4)
-                            notAvailable[i + 1] = true;
-
-                        InstantiateBlock(i, GetZ());
-
-                        return;
-                    }
-                    else
-                        ceil += 100f / followersSlot;
-                }
-            }
-        }
-
-        public void GenerateNonFollowerBlock(bool[] curLine, bool[] notAvailable, int notFollowersSlot)
-        {
-            int random = rng.Next(0, 100);
-            float ceil = 100f / notFollowersSlot;
-            for (int i = 0; i < 5; i++)
-            {
-                if (!notAvailable[i] && (!lastLine[i] && (i >= 4 || !lastLine[i + 1])))
-                {
-                    if (random < ceil)
-                    {
-                        curLine[i] = true;
-
-                        notAvailable[i] = true;
-                        if (i > 0)
-                            notAvailable[i - 1] = true;
-                        if (i < 4)
-                            notAvailable[i + 1] = true;
-
-                        InstantiateBlock(i, GetZ());
-
-                        return;
-                    }
-                    else
-                        ceil += 100f / notFollowersSlot;
-                }
-            }
+            curLine[index] = true;
+            line[index] = InstantiateBlock(index, GetZ());
         }
 
         #endregion
@@ -231,7 +172,7 @@ namespace svb
 
         public void GenerateShortWallLine()
         {
-            bool[] curLine = new bool[5];
+            bool[] curLine = new bool[columns];
             int random = rng.Next(0, 100);
 
             if (random < 32)
@@ -240,21 +181,18 @@ namespace svb
             }
             else if (random < 76)
             {
-                // 1 Wall -> Where to place it ? More chance in front of block
                 GenerateWall(curLine);
             }
             else if (random < 95)
             {
                 GenerateWall(curLine);
                 GenerateWall(curLine);
-                // 2 Wall -> Where to place it ? More chance in front of block
             }
             else
             {
                 GenerateWall(curLine);
                 GenerateWall(curLine);
                 GenerateWall(curLine);
-                // 3 Wall -> Where to place it ? More chance in front of block
             }
 
             obstacles.Add(line);
@@ -268,87 +206,45 @@ namespace svb
         {
             int random = rng.Next(0, 100);
 
-            bool[] notAvailable = new bool[5];
-            notAvailable[0] = true;
+            bool[] available = GetAvailableWalls();
+            var followerSlots = new List<int>();
+            var nonFollowerSlots = new List<int>();
 
-            int followersSlot = 0;
-            int notFollowersSlot = 0;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < columns; i++)
             {
-                if (!notAvailable[i])
+                if (available[i])
                 {
                     if (lastLine[i] || (i > 0 && lastLine[i - 1]))
-                        followersSlot++;
+                        followerSlots.Add(i);
                     else
-                        notFollowersSlot++;
+                        nonFollowerSlots.Add(i);
                 }
             }
 
-            if (followersSlot > 0 && random < 62)
-                GenerateFollowerWall(curLine, notAvailable, followersSlot);
+            List<int> slots;
+            if (followerSlots.Count > 0 && random < 62 || nonFollowerSlots.Count == 0)
+                slots = followerSlots;
             else
-                GenerateNonFollowerWall(curLine, notAvailable, notFollowersSlot);
-        }
+                slots = nonFollowerSlots;
+           
+            random = rng.Next(0, slots.Count);
+            int index = slots[random];
 
-        public void GenerateFollowerWall(bool[] curLine, bool[] notAvailable, int followersSlot)
-        {
-            int random = rng.Next(0, 100);
-            float ceil = 100f / followersSlot;
-            for (int i = 0; i < 5; i++)
-            {
-                if (!notAvailable[i] && (lastLine[i] || (i > 0 && lastLine[i - 1])))
-                {
-                    if (random < ceil)
-                    {
-                        curLine[i] = true;
-
-                        notAvailable[i] = true;
-
-                        InstantiateWall(i, GetZ());
-
-                        return;
-                    }
-                    else
-                        ceil += 100f / followersSlot;
-                }
-            }
-        }
-
-        public void GenerateNonFollowerWall(bool[] curLine, bool[] notAvailable, int notFollowersSlot)
-        {
-            int random = rng.Next(0, 100);
-            float ceil = 100f / notFollowersSlot;
-            for (int i = 0; i < 5; i++)
-            {
-                if (!notAvailable[i] && (!lastLine[i] && (i == 0 || !lastLine[i - 1])))
-                {
-                    if (random < ceil)
-                    {
-                        curLine[i] = true;
-
-                        notAvailable[i] = true;
-
-                        InstantiateWall(i, GetZ());
-
-                        return;
-                    }
-                    else
-                        ceil += 100f / notFollowersSlot;
-                }
-            }
+            curLine[index] = true;
+            line[index] = InstantiateWall(index, GetZ());
         }
 
         public void GenerateLongWallLine()
         {
             GenerateShortWallLine();
 
-            line = new GameObject[5];
+            line = new GameObject[columns];
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < columns; i++)
             {
-                if (obstacles[obstacles.Count - 1][i] != null)
+                if (obstacles[obstacles.Count - 1][i] != null && obstacles[obstacles.Count - 1][i].GetComponent<Wall>())
                 {
-                    InstantiateWall(i, GetZ());
+                    line[i] = InstantiateWall(i, GetZ());
                 }
             }
 
@@ -359,14 +255,14 @@ namespace svb
 
         #endregion
 
-        Wall InstantiateWall(int col, float z)
+        GameObject InstantiateWall(int col, float z)
         {
-            return InstantiateObstacle(wallPrefab.gameObject, col, z).GetComponent<Wall>();
+            return InstantiateObstacle(wallPrefab.gameObject, col, z);
         }
 
-        Block InstantiateBlock(int col, float z)
+        GameObject InstantiateBlock(int col, float z)
         {
-            return InstantiateObstacle(blockPrefab.gameObject, col, z).GetComponent<Block>();
+            return InstantiateObstacle(blockPrefab.gameObject, col, z);
         }
         
         PowerUp InstantiatePowerUp(int col, float z)
@@ -376,16 +272,23 @@ namespace svb
 
         GameObject InstantiateObstacle(GameObject prefab, int col, float z)
         {
-            float x = (col - 2) * lineHeight;
+            float x = (col - (columns / 2)) * lineHeight;
             Vector3 pos = new Vector3(x, 0, z);
 
-            line[col] = Instantiate(prefab, pos, Quaternion.identity, transform);
-            return line[col];
+            return Instantiate(prefab, pos, Quaternion.identity, transform);
         }
 
         void GeneratePowerUps()
         {
-
+            for (int i = 0; i < columns; i++)
+            {
+                if (!line[i] && rng.Next(0, 100) < 5)
+                {
+                    PowerUp powerUp = InstantiatePowerUp(i, GetZ());
+                    powerUp.Init(rng.Next(1, 6));
+                    line[i] = powerUp.gameObject;
+                }
+            }
         }
 
         public int Dfs(int x, int y)
@@ -423,6 +326,45 @@ namespace svb
         public float GetZ()
         {
             return nextZ + lineHeight * ahead + lineHeight / 2;
+        }
+
+        public bool[] GetAvailableBlocks()
+        {
+            var available = new bool[columns];
+            for (int i = 0; i < columns; i++)
+                available[i] = true;
+
+            for (int i = 0; i < columns; i++)
+            {
+                if (line[i] != null)
+                {
+                    available[i] = false;
+                    if (i > 0)
+                        available[i - 1] = false;
+                    if (i < 4)
+                        available[i + 1] = false;
+                }
+            }
+
+            return available;
+        }
+
+        public bool[] GetAvailableWalls()
+        {
+            var available = new bool[columns];
+            available[0] = false;
+            for (int i = 1; i < columns; i++)
+                available[i] = true;
+
+            for (int i = 1; i < columns; i++)
+            {
+                if (line[i] != null)
+                {
+                    available[i] = false;
+                }
+            }
+
+            return available;
         }
     }
 }
