@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace svb
 {
-    public class Stage : MonoBehaviour
+    public class LevelGenerator : MonoBehaviour
     {
         #region Singleton
 
-        public static Stage m;
+        public static LevelGenerator m;
 
         void Awake()
         {
@@ -34,11 +34,14 @@ namespace svb
 
         float nextZ;
         int snakeIndex;
-        Vector3 snakePos;
+        int snakePosX;
+        int snakePosY;
 
         const int columns = 5;
         const float lineHeight = 1.5f;
-        const int ahead = 8;
+        const int ahead = 6;
+        const int infinity = 9999;
+        const int cleanDist = 15;
 
         bool block;
 
@@ -47,26 +50,28 @@ namespace svb
 
         System.Random rng;
 
-        public void Init(Snake snake, int level)
+        [SerializeField]
+        Stats stats;
+
+        public void Init(Snake snake, int levelIndex)
         {
-            nextZ = lineHeight/2;
+            nextZ = lineHeight/2f;
             snakeIndex = 0;
             block = true;
-            rng = new System.Random(level);
+            rng = new System.Random(levelIndex);
             this.snake = snake;
+
+            for (int i = 0; i < 10; i++)
+                obstacles.Add(new GameObject[columns]);
         }
 
         void Update()
         {
-            if (nextZ == lineHeight/2)
-            {
-                //FirstInit
-            }
-
             if (snake.GetPos().z >= nextZ)
             {
                 snakeIndex++;
-                snakePos = new Vector3((snake.GetPos().x + 2 * lineHeight)  % lineHeight, 0, snakeIndex);
+                snakePosX =(int)((snake.GetPos().x + (columns / 2f) * lineHeight) / lineHeight);
+                snakePosY = snakeIndex;
                 line = new GameObject[columns];
 
                 if (block)
@@ -74,37 +79,39 @@ namespace svb
                 else
                     GenerateWallLine();
 
-                if (obstacles.Count >= 20)
-                    CleanOldestLine();
+                CleanOldestLine();
 
                 block = !block;
             }
         }
 
-        public void CleanOldestLine()
+        void CleanOldestLine()
         {
-            for (int i = 0; i < columns; i++)
+            while (obstacles.Count >= cleanDist)
             {
-                if (obstacles[0][i] != null)
-                    Destroy(obstacles[0][i]);
-            }
+                for (int i = 0; i < columns; i++)
+                {
+                    if (obstacles[0][i] != null)
+                        Destroy(obstacles[0][i]);
+                }
 
-            obstacles.RemoveAt(0);
-            snakeIndex--;
+                obstacles.RemoveAt(0);
+                snakeIndex--;
+            }
         }
 
         #region Block
 
-        public void GenerateBlockLine()
+        void GenerateBlockLine()
         {
             bool[] curLine = new bool[columns];
 
             int random = rng.Next(0, 100);
-            if (random < 40)
+            if (random < stats.OneBlockPercent)
             {
                 GenerateBlock(curLine);
             }
-            else if (random < 78)
+            else if (random < stats.OneBlockPercent + stats.TwoBlockPercent)
             {
                 GenerateBlock(curLine);
                 GenerateBlock(curLine);
@@ -115,18 +122,16 @@ namespace svb
                     line[i] = InstantiateBlock(i, GetZ());
             }
 
+            GeneratePowerUps();
             obstacles.Add(line);
 
-            GeneratePowerUps();
-
-            //Dfs
-            //if not enough paths then lower or destroy one cube
+            InitNumbers(curLine);
 
             nextZ += lineHeight;
             lastLine = curLine;
         }
 
-        public void GenerateBlock(bool[] curLine)
+        void GenerateBlock(bool[] curLine)
         {
             int random = rng.Next(0, 100);
 
@@ -162,28 +167,28 @@ namespace svb
 
         #region Wall
 
-        public void GenerateWallLine()
+        void GenerateWallLine()
         {
-            if (rng.Next(0, 1) >= 0.5f)
+            if (rng.Next(0, 100) >= stats.shortWallPercent)
                 GenerateShortWallLine();
             else
                 GenerateLongWallLine();
         }
 
-        public void GenerateShortWallLine()
+        void GenerateShortWallLine()
         {
             bool[] curLine = new bool[columns];
             int random = rng.Next(0, 100);
 
-            if (random < 32)
+            if (random < stats.ZeroWallPercent)
             {
                 // 0 Wall
             }
-            else if (random < 76)
+            else if (random < stats.ZeroWallPercent + stats.OneWallPercent)
             {
                 GenerateWall(curLine);
             }
-            else if (random < 95)
+            else if (random < stats.ZeroWallPercent + stats.OneWallPercent + stats.TwoWallPercent)
             {
                 GenerateWall(curLine);
                 GenerateWall(curLine);
@@ -195,14 +200,14 @@ namespace svb
                 GenerateWall(curLine);
             }
 
-            obstacles.Add(line);
             GeneratePowerUps();
+            obstacles.Add(line);
 
             nextZ += lineHeight;
             lastLine = curLine;
         }
 
-        public void GenerateWall(bool[] curLine)
+        void GenerateWall(bool[] curLine)
         {
             int random = rng.Next(0, 100);
 
@@ -222,7 +227,7 @@ namespace svb
             }
 
             List<int> slots;
-            if (followerSlots.Count > 0 && random < 62 || nonFollowerSlots.Count == 0)
+            if (followerSlots.Count > 0 && random < stats.wallFollowsBlock || nonFollowerSlots.Count == 0)
                 slots = followerSlots;
             else
                 slots = nonFollowerSlots;
@@ -234,7 +239,7 @@ namespace svb
             line[index] = InstantiateWall(index, GetZ());
         }
 
-        public void GenerateLongWallLine()
+        void GenerateLongWallLine()
         {
             GenerateShortWallLine();
 
@@ -248,9 +253,10 @@ namespace svb
                 }
             }
 
-            obstacles.Add(line);
             GeneratePowerUps();
+            obstacles.Add(line);
             nextZ += lineHeight;
+            snakeIndex++;
         }
 
         #endregion
@@ -282,53 +288,114 @@ namespace svb
         {
             for (int i = 0; i < columns; i++)
             {
-                if (!line[i] && rng.Next(0, 100) < 5)
+                if (!line[i] && rng.Next(0, 100) < stats.powerUps)
                 {
                     PowerUp powerUp = InstantiatePowerUp(i, GetZ());
-                    powerUp.Init(rng.Next(1, 6));
+                    powerUp.Init(rng.Next(stats.powerUpsMinValue, stats.powerUpsMaxValue + 1));
                     line[i] = powerUp.gameObject;
                 }
             }
         }
 
-        public int Dfs(int x, int y)
+        void InitNumbers(bool[] curLine)
         {
-            if (snakePos.x == x && snakePos.z == y)
+            bool feasible = false;
+            int max = -infinity;
+            int maxIndex = -1;
+            for (int i = 0; i < columns; i++)
             {
+                int rest = Dfs(i, obstacles.Count - 2);
+                if (line[i] && line[i].GetComponent<Block>())
+                {
+                    Block block = line[i].GetComponent<Block>();
+
+                    int random = rng.Next(stats.blocksMinValue, stats.blocksMaxValue + 1);
+                    block.SetAmount(random);
+
+                    if (rest > max)
+                    {
+                        max = rest;
+                        maxIndex = i;
+                    }
+
+                    if (rest - random >= 0)
+                        feasible = true;
+                }
+                else
+                {
+                    if (rest >= 0)
+                        feasible = true;
+                }
+            }
+
+            if (feasible)
+                return;
+
+            if (max == 0)
+            {
+                Destroy(line[maxIndex].gameObject);
+                line[maxIndex] = null;
+                curLine[maxIndex] = false;
+            }
+            else if (max > 0)
+                line[maxIndex].GetComponent<Block>().SetAmount(rng.Next(1, max + 1));
+        }
+
+        enum EDirection
+        {
+            LEFT,
+            RIGHT,
+            UP
+        }
+
+        int Dfs(int x, int y, int dist = ahead * 2, EDirection from = EDirection.UP)        
+        {
+            int res = -infinity;
+
+            if (dist <= 0)
+                return -9997;
+
+            if (snakePosX == x && snakePosY == y)
                 return snake.GetFollower();
-            }
 
-            int res = -99999;
-
-            if (y < snakePos.y)
-                return res;
-
-            if ((!obstacles[y][x] || !obstacles[y][x].GetComponent<Wall>()) && (!obstacles[y][x - 1] || !obstacles[y][x - 1].GetComponent<Block>()))
+            if (res < 0 && y - 1 >= snakePosY)
             {
-                res = Mathf.Max(res, Dfs(x - 1, y));
-                if (res >= 0)
-                    return res;
+                res = Mathf.Max(res, Dfs(x, y - 1, dist - 1, EDirection.UP));
             }
 
-            if (!obstacles[y - 1][x] || !obstacles[y - 1][x].GetComponent<Block>())
+            GameObject obstacle;
+            if (dist > 3 && res < 0 && x + 1 < columns && from != EDirection.RIGHT)
             {
-                res = Mathf.Max(res, Dfs(x, y - 1));
-                if (res >= 0)
-                    return res;
+                obstacle = obstacles[y][x + 1];
+                if (!obstacle || !obstacle.GetComponent<Wall>())
+                {
+                    res = Mathf.Max(res, Dfs(x + 1, y, dist - 1, EDirection.LEFT));
+                }
             }
 
-            if (!obstacles[y][x + 1] || (!obstacles[y][x + 1].GetComponent<Wall>() && !obstacles[y][x + 1].GetComponent<Block>()))
-                return Mathf.Max(res, Dfs(x + 1, y));
+            obstacle = obstacles[y][x];
+            if (dist > 3 && res < 0 && x - 1 >= 0 && (!obstacle || !obstacle.GetComponent<Wall>()) && from != EDirection.LEFT)
+            {
+                res = Mathf.Max(res, Dfs(x - 1, y, dist - 1, EDirection.RIGHT));
+            }
+
+            if (obstacle)
+            {
+                if (obstacle.GetComponent<Block>())
+                    res -= obstacle.GetComponent<Block>().amount;
+                else if (obstacle.GetComponent<PowerUp>())
+                    res += obstacle.GetComponent<PowerUp>().amount;
+            }
 
             return res;
         }
 
-        public float GetZ()
+        float GetZ()
         {
             return nextZ + lineHeight * ahead + lineHeight / 2;
         }
 
-        public bool[] GetAvailableBlocks()
+        bool[] GetAvailableBlocks()
         {
             var available = new bool[columns];
             for (int i = 0; i < columns; i++)
@@ -349,7 +416,7 @@ namespace svb
             return available;
         }
 
-        public bool[] GetAvailableWalls()
+        bool[] GetAvailableWalls()
         {
             var available = new bool[columns];
             available[0] = false;

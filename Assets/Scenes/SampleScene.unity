@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 27077144}
   - component: {fileID: 27077145}
   m_Layer: 0
-  m_Name: Stage
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,6 +169,7 @@ MonoBehaviour:
   wallPrefab: {fileID: 8286175536676742611, guid: 5dd0bbba23890d34a9a5d3f22a7c2c33, type: 3}
   blockPrefab: {fileID: 3576219287226618113, guid: e97de50969da8554ea5e309f4ffcc0af, type: 3}
   powerUpPrefab: {fileID: 987587671365298351, guid: b07cb0b9495a4c94c9d55053cd3e55fd, type: 3}
+  stats: {fileID: 11400000, guid: c0643759428469c46816ae32a6f62539, type: 2}
 --- !u!1 &623664013
 GameObject:
   m_ObjectHideFlags: 0

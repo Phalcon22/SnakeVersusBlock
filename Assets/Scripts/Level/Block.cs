@@ -9,23 +9,22 @@ namespace svb
     {
         public Text text;
 
-        public int amount;
-
-        void Start()
-        {
-            text.text = amount.ToString();
-        }
+        public int amount { get; private set; }
 
         public void Consume()
         {
-            amount--;
-            text.text = amount.ToString();
+            SetAmount(amount - 1);
 
             if (amount <= 0)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
-    }
 
+        public void SetAmount(int amount)
+        {
+            this.amount = amount;
+            text.text = amount.ToString();
+        }
+    }
 }

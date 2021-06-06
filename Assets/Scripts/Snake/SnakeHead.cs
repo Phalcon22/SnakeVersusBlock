@@ -95,7 +95,7 @@ namespace svb
             {
                 for (int i = 0; i < powerUp.transform.parent.GetComponent<PowerUp>().amount; i++)
                     snake.AddPart();
-                Destroy(powerUp.transform.parent.gameObject);
+                powerUp.transform.parent.gameObject.SetActive(false);
             }
 
             posHistory.Add(rb.position);
@@ -131,7 +131,7 @@ namespace svb
             Vector3 pos = rb.position;
 
             float direction = (pos.x < targetX) ? 1 : -1;
-            float translation = direction * GameManager.m.rules.verticalSpeed * Time.deltaTime;
+            float translation = direction * GameManager.m.rules.horizontalSpeed * Time.deltaTime;
 
             if (direction < 0 && pos.x + translation < targetX || direction > 0 && pos.x + translation > targetX)
             {

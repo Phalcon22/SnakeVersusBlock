@@ -38,7 +38,7 @@ namespace svb
         void Start()
         {
             snake_ = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity);
-            Stage.m.Init(snake_, 1);
+            LevelGenerator.m.Init(snake_, 0);
         }
     }
 }

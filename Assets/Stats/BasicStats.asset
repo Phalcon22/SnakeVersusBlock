@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f0e1dbca5f14a64eb9e5a1784d2ebad, type: 3}
-  m_Name: BasicRules
+  m_Script: {fileID: 11500000, guid: f6c397bab453e9349a4c7578f6dec41b, type: 3}
+  m_Name: BasicStats
   m_EditorClassIdentifier: 
-  verticalSpeed: 8
-  horizontalSpeed: 32
-  delayBetweenParts: 0.03
-  defaultFollowerAmount: 5
-  destructionRollBack: 300
-  cameraMaxDistance: 2
-  cameraSyncDist: 0.1
+  powerUps: 7.5
+  powerUpsMinValue: 1
+  powerUpsMaxValue: 5
+  blocksMinValue: 1
+  blocksMaxValue: 50
