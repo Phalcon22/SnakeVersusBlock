@@ -8,5 +8,6 @@ namespace svb
     public class Level : ScriptableObject
     {
         public ColorSet colorSet;
+        public int length = 50;
     }
 }

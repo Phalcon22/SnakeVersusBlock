@@ -27,6 +27,9 @@ namespace svb
         [SerializeField]
         PowerUp powerUpPrefab;
 
+        [SerializeField]
+        GameObject arrivalPrefab;
+
 
         //PRIVATE
         Snake snake;
@@ -41,7 +44,7 @@ namespace svb
         const float lineHeight = 1.5f;
         const int ahead = 6;
         const int infinity = 9999;
-        const int cleanDist = 15;
+        const int cleanDist = 20;
 
         bool block;
 
@@ -56,6 +59,8 @@ namespace svb
         [SerializeField]
         Level[] levels;
         public Level level { get; private set; }
+
+        int currentLength = 0;
 
         public void Init(Snake snake, int levelIndex)
         {
@@ -73,9 +78,10 @@ namespace svb
 
         void Update()
         {
-            if (snake.GetPos().z >= nextZ)
+            if (snake.GetPos().z >= nextZ && currentLength < level.length)
             {
                 snakeIndex++;
+                currentLength++;
                 snakePosX =(int)((snake.GetPos().x + (columns / 2f) * lineHeight) / lineHeight);
                 snakePosY = snakeIndex;
                 line = new GameObject[columns];
@@ -88,6 +94,17 @@ namespace svb
                 CleanOldestLine();
 
                 block = !block;
+            }
+            else if (currentLength == level.length || currentLength == level.length + 1)
+            {
+                currentLength = infinity;
+                lastLine = new bool[columns];
+
+                obstacles.Add(new GameObject[columns]);
+                obstacles.Add(new GameObject[columns]);
+                nextZ += lineHeight * 2;
+
+                InstantiateObstacle(arrivalPrefab, 2, GetZ());
             }
         }
 
@@ -263,6 +280,7 @@ namespace svb
             obstacles.Add(line);
             nextZ += lineHeight;
             snakeIndex++;
+            currentLength++;
         }
 
         #endregion
