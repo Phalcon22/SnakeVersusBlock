@@ -15,10 +15,12 @@ namespace svb
         public Rigidbody leftBorder;
         public Rigidbody rightBorder;
 
-        void Start()
+        public void Init()
         {
             snake = GameManager.m.snake;
             rb = GetComponent<Rigidbody>();
+
+            Camera.main.backgroundColor = LevelGenerator.m.level.colorSet.background;
 
             Vector3 startPos = snake.GetPos();
             startPos.y = rb.position.y;

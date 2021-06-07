@@ -9,10 +9,17 @@ namespace svb
         SnakeHead head = null;
         List<SnakePart> snakeParts = new List<SnakePart>();
 
-        public SnakeHead headPrefab;
-        public SnakePart partPrefab;
+        [SerializeField]
+        SnakeHead headPrefab;
+        [SerializeField]
+        SnakePart partPrefab;
 
         int followers = 0;
+
+        [SerializeField]
+        SnakeColors colors;
+
+        System.Random rng = new System.Random();
 
         bool pause = true;
         void Start()
@@ -75,6 +82,8 @@ namespace svb
             head.posHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
             head.deltasHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
 
+            head.GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
+
             followers--;
             snakeParts.RemoveAt(0);
             Destroy(toRemove.gameObject);
@@ -103,6 +112,13 @@ namespace svb
             pause = true;
             yield return new WaitForSeconds(seconds);
             pause = false;
+        }
+
+        public Color GetNewColor()
+        {
+            int index = rng.Next(0, colors.colors.Length);
+
+            return colors.colors[index];
         }
     }
 }

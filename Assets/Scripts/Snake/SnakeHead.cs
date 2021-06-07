@@ -26,6 +26,8 @@ namespace svb
             col = GetComponent<BoxCollider>();
 
             transform.SetParent(snake.transform);
+
+            GetComponent<MeshRenderer>().material.color = snake.GetNewColor();
         }
 
         public void UpdateMouse()

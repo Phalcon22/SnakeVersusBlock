@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace svb
 {
-
     public class SnakePart : MonoBehaviour
     {
         int i = 0;
@@ -24,6 +23,8 @@ namespace svb
             this.head = head;
             this.delay = delay;
             i = head.posHistory.Count - 1;
+
+            GetComponent<MeshRenderer>().material.color = GameManager.m.snake.GetNewColor();
         }
 
         public int GetMoveIndex()

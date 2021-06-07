@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour
+namespace svb
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Wall : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void Start()
+        {
+            GetComponentInChildren<MeshRenderer>().material.color = LevelGenerator.m.level.colorSet.walls;
+        }
     }
 }

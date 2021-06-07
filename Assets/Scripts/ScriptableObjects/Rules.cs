@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace svb
 {
-    [CreateAssetMenu(fileName = "New Rules")]
+    [CreateAssetMenu(fileName = "New Rules", menuName = "New ScriptableObject/Rules")]
     public class Rules : ScriptableObject
     {
         [Header("Snake")]

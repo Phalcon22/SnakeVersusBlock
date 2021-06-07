@@ -16,6 +16,8 @@ namespace svb
         {
             this.amount = amount;
             text.text = amount.ToString();
+            text.color = LevelGenerator.m.level.colorSet.walls;
+            GetComponentInChildren<MeshRenderer>().material.color = LevelGenerator.m.level.colorSet.walls;
         }
     }
 }

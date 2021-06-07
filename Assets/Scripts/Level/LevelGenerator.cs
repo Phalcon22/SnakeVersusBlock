@@ -53,6 +53,10 @@ namespace svb
         [SerializeField]
         Stats stats;
 
+        [SerializeField]
+        Level[] levels;
+        public Level level { get; private set; }
+
         public void Init(Snake snake, int levelIndex)
         {
             nextZ = lineHeight/2f;
@@ -60,6 +64,8 @@ namespace svb
             block = true;
             rng = new System.Random(levelIndex);
             this.snake = snake;
+
+            level = levels[levelIndex];
 
             for (int i = 0; i < 10; i++)
                 obstacles.Add(new GameObject[columns]);
@@ -348,43 +354,47 @@ namespace svb
             UP
         }
 
-        int Dfs(int x, int y, int dist = ahead * 2, EDirection from = EDirection.UP)        
+        int Dfs(int x, int y, int dist = 0, EDirection from = EDirection.UP, int lateralMoveInRow = 0)        
         {
             int res = -infinity;
 
-            if (dist <= 0)
+            if (dist > ahead * 2)
+            {
                 return -9997;
+            }
 
             if (snakePosX == x && snakePosY == y)
                 return snake.GetFollower();
 
             if (res < 0 && y - 1 >= snakePosY)
             {
-                res = Mathf.Max(res, Dfs(x, y - 1, dist - 1, EDirection.UP));
+                res = Mathf.Max(res, Dfs(x, y - 1, dist + 1, EDirection.UP, 0));
             }
 
-            GameObject obstacle;
-            if (dist > 3 && res < 0 && x + 1 < columns && from != EDirection.RIGHT)
+            if (lateralMoveInRow < 2 && res < 0 && x + 1 < columns && from != EDirection.RIGHT)
             {
-                obstacle = obstacles[y][x + 1];
+                GameObject obstacle = obstacles[y][x + 1];
                 if (!obstacle || !obstacle.GetComponent<Wall>())
                 {
-                    res = Mathf.Max(res, Dfs(x + 1, y, dist - 1, EDirection.LEFT));
+                    res = Mathf.Max(res, Dfs(x + 1, y, dist + 1, EDirection.LEFT, lateralMoveInRow));
                 }
             }
 
-            obstacle = obstacles[y][x];
-            if (dist > 3 && res < 0 && x - 1 >= 0 && (!obstacle || !obstacle.GetComponent<Wall>()) && from != EDirection.LEFT)
+            if (lateralMoveInRow < 2 && res < 0 && x - 1 >= 0 && from != EDirection.LEFT)
             {
-                res = Mathf.Max(res, Dfs(x - 1, y, dist - 1, EDirection.RIGHT));
+                GameObject obstacle = obstacles[y][x];
+                if (!obstacle || !obstacle.GetComponent<Wall>())
+                {
+                    res = Mathf.Max(res, Dfs(x - 1, y, dist + 1, EDirection.RIGHT, lateralMoveInRow));
+                }
             }
 
-            if (obstacle)
+            if (obstacles[y][x])
             {
-                if (obstacle.GetComponent<Block>())
-                    res -= obstacle.GetComponent<Block>().amount;
-                else if (obstacle.GetComponent<PowerUp>())
-                    res += obstacle.GetComponent<PowerUp>().amount;
+                if (obstacles[y][x].GetComponent<Block>())
+                    res -= obstacles[y][x].GetComponent<Block>().amount;
+                else if (obstacles[y][x].GetComponent<PowerUp>())
+                    res += obstacles[y][x].GetComponent<PowerUp>().amount;
             }
 
             return res;

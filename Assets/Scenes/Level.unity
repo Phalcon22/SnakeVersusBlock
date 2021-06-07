@@ -170,6 +170,8 @@ MonoBehaviour:
   blockPrefab: {fileID: 3576219287226618113, guid: e97de50969da8554ea5e309f4ffcc0af, type: 3}
   powerUpPrefab: {fileID: 987587671365298351, guid: b07cb0b9495a4c94c9d55053cd3e55fd, type: 3}
   stats: {fileID: 11400000, guid: c0643759428469c46816ae32a6f62539, type: 2}
+  levels:
+  - {fileID: 11400000, guid: 66459844041a4e54bbfe3f8ab6c64881, type: 2}
 --- !u!1 &623664013
 GameObject:
   m_ObjectHideFlags: 0

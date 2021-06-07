@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace svb
 {
-    [CreateAssetMenu(fileName = "New Level")]
+    [CreateAssetMenu(fileName = "New Level", menuName = "New ScriptableObject/Stats")]
     public class Stats : ScriptableObject
     {
         [Header("PowerUp")]

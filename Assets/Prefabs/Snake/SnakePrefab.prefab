@@ -45,3 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   headPrefab: {fileID: -6044471979951461033, guid: 5503f1cad93648a47886cdd230632e33, type: 3}
   partPrefab: {fileID: 3384324265330943906, guid: 196c48eea437345478ef19532681e396, type: 3}
+  colors: {fileID: 11400000, guid: 1aabeb61148708c45960a556c78fb416, type: 2}
