@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Level0
   m_EditorClassIdentifier: 
   colorSet: {fileID: 11400000, guid: efe381a41ba45a04eb827b3a89ca7aaf, type: 2}
-  length: 10
+  length: 50

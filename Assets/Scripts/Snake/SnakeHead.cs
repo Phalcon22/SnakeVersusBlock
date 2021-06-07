@@ -19,6 +19,8 @@ namespace svb
         public List<Vector3> posHistory = new List<Vector3>();
         public List<List<float>> deltasHistory = new List<List<float>>();
 
+        bool pauseY = false;
+
         public void Init(Snake snake)
         {
             this.snake = snake;
@@ -87,8 +89,7 @@ namespace svb
             if (removePart)
             {
                 snake.RemovePart();
-                translation.z = -GameManager.m.rules.destructionRollBack * Time.deltaTime;
-                Translate(new Vector3(0, 0, -GameManager.m.rules.destructionRollBack * Time.deltaTime));
+                StartCoroutine(PauseCoroutine(GameManager.m.rules.destructionDelay));
             }
 
             var powerUpColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask("PowerUp"));
@@ -145,7 +146,17 @@ namespace svb
 
         float GetYTranslation()
         {
+            if (pauseY)
+                return 0;
+
             return GameManager.m.rules.verticalSpeed * Time.deltaTime;
+        }
+
+        IEnumerator PauseCoroutine(float seconds)
+        {
+            pauseY = true;
+            yield return new WaitForSeconds(seconds);
+            pauseY = false;
         }
     }
 }

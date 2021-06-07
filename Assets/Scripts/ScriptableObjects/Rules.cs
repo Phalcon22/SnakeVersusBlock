@@ -14,7 +14,7 @@ namespace svb
         public float delayBetweenParts = 0.03f;
 
         public int defaultFollowerAmount = 4;
-        public float destructionRollBack = 0.4f;
+        public float destructionDelay = 0.12f;
 
         [Header("Camera")]
         public float cameraMaxDistance = 2;

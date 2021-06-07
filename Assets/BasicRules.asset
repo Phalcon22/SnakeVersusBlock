@@ -16,6 +16,6 @@ MonoBehaviour:
   horizontalSpeed: 25
   delayBetweenParts: 0.03
   defaultFollowerAmount: 5
-  destructionRollBack: 300
+  destructionRollBack: 150
   cameraMaxDistance: 2
   cameraSyncDist: 0.1
