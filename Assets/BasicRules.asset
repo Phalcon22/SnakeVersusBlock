@@ -15,9 +15,9 @@ MonoBehaviour:
   verticalSpeed: 8
   horizontalSpeed: 25
   delayBetweenSnakeParts: 0.05
-  defaultFollowerAmount: 20
+  defaultFollowerAmount: 1
   destructionDelay: 0.12
   destructionSlowDown: 0.5
   cameraMaxDistance: 2
   cameraSyncDist: 0.1
-  godMode: 1
+  godMode: 0

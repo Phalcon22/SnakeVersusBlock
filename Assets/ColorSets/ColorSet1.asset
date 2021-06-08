@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0049aee73c65eed4fa3301c563784da2, type: 3}
   m_Name: ColorSet1
   m_EditorClassIdentifier: 
-  font: {r: 0, g: 0, b: 0, a: 1}
+  font: {r: 1, g: 1, b: 1, a: 1}
+  image: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
   background: {r: 0, g: 0, b: 0, a: 0.9843137}
   walls: {r: 1, g: 1, b: 1, a: 1}
   blocks:
