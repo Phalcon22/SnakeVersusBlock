@@ -21,8 +21,12 @@ namespace svb
 
         bool pauseY = false;
 
+        bool turbo;
+
         public void Init(Snake snake)
         {
+            turbo = false;
+
             this.snake = snake;
             rb = GetComponent<Rigidbody>();
             col = GetComponent<BoxCollider>();
@@ -151,6 +155,11 @@ namespace svb
             if (pauseY)
                 y *= GameManager.m.rules.destructionSlowDown;
 
+            if (turbo)
+            {
+                y *= 2;
+            }
+
             return y;
         }
 
@@ -159,6 +168,16 @@ namespace svb
             pauseY = true;
             yield return new WaitForSeconds(seconds);
             pauseY = false;
+        }
+
+        public void ActivateTurbo()
+        {
+            turbo = true;
+        }
+
+        public void DeactivateTurbo()
+        {
+            turbo = false;
         }
     }
 }

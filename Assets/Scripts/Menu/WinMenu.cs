@@ -26,10 +26,11 @@ namespace svb
 
             int unlocked = Save.GetUnlocked();
             int choosed = Save.GetChoosed();
-            if (choosed >= unlocked)
+            if (choosed >= unlocked && choosed + 1 < LevelGenerator.m.levels.Length)
                 Save.IncrementUnlocked();
 
-            Save.IncrementChoosed();
+            if (Save.GetUnlocked() > choosed)
+                Save.IncrementChoosed();
 
             SceneManager.LoadScene("Level");
         }

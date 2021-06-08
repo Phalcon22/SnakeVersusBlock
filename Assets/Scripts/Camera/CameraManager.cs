@@ -54,7 +54,12 @@ namespace svb
                 if (dist >= 0.5f)
                     coef = 0.5f;
 
-                var translation = new Vector3(0, 0, GameManager.m.rules.verticalSpeed) * Time.deltaTime * coef;
+                float speed = GameManager.m.rules.verticalSpeed;
+
+                if (GameManager.m.snake.turbo)
+                    speed *= 2;
+
+                var translation = new Vector3(0, 0, speed) * Time.deltaTime * coef;
                 rb.MovePosition(rb.position + translation);
             }
 

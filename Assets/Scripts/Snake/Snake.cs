@@ -22,8 +22,13 @@ namespace svb
         System.Random rng = new System.Random();
 
         bool pause = true;
+
+        public bool turbo { get; private set; }
+
         void Start()
         {
+            turbo = false;
+
             followers = 0;
 
             head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
@@ -129,6 +134,28 @@ namespace svb
             int index = rng.Next(0, colors.colors.Length);
 
             return colors.colors[index];
+        }
+
+        Coroutine turbo_co;
+        public void ActivateTurbo()
+        {
+            if (turbo)
+            {
+                StopCoroutine(turbo_co);
+            }
+
+            turbo_co = StartCoroutine(TurboCoroutine(8));
+        }
+
+        IEnumerator TurboCoroutine(float seconds)
+        {
+            head.ActivateTurbo();
+            
+            turbo = true;
+            yield return new WaitForSeconds(seconds);
+            turbo = false;
+
+            head.DeactivateTurbo();
         }
     }
 }

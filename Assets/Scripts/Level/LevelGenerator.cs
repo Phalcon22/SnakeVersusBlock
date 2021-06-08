@@ -53,7 +53,6 @@ namespace svb
 
         System.Random rng;
 
-        [SerializeField]
         Stats stats;
 
         public Level[] levels;
@@ -61,33 +60,40 @@ namespace svb
 
         int currentLength = 0;
 
-        bool infinite;
+        bool infiniteMode;
 
         public void Init(Snake snake, int levelIndex)
         {
+            this.snake = snake;
+
             nextZ = lineHeight/2f + lineHeight * 2;
             snakeIndex = 0;
-            block = true;
-            this.snake = snake;
-            infinite = levelIndex == -1;
 
-            int seed = levelIndex;
-            if (levelIndex < 0)
-                seed = Random.Range(0, 1000000);
-
-            rng = new System.Random(seed);
-
-            if (levelIndex < 0)
-            {
-                level = levels[rng.Next(0, levels.Length)];
-            }
-            else
-            {
-                level = levels[levelIndex];
-            }
+            LoadRng(levelIndex);
+            LoadLevel(levelIndex);
 
             for (int i = 0; i < 10; i++)
                 obstacles.Add(new GameObject[columns]);
+        }
+
+        void LoadRng(int levelIndex)
+        {
+            if (levelIndex < 0)
+                rng = new System.Random();
+            else
+                rng = new System.Random(levelIndex);
+        }
+
+        void LoadLevel(int levelIndex)
+        {
+            block = true;
+            infiniteMode = levelIndex == -1;
+
+            if (levelIndex < 0)
+                level = levels[rng.Next(0, levels.Length)];
+            else
+                level = levels[levelIndex];
+            stats = level.stats;
         }
 
         void Update()
@@ -95,34 +101,43 @@ namespace svb
             if (!GameManager.m.started)
                 return;
 
-            if (snake.GetPos().z >= nextZ && (currentLength < level.length || infinite))
+            if (snake.GetPos().z >= nextZ)
             {
-                snakeIndex++;
-                currentLength++;
-                snakePosX =(int)((snake.GetPos().x + (columns / 2f) * lineHeight) / lineHeight);
-                snakePosY = snakeIndex;
-                line = new GameObject[columns];
-
-                if (block)
-                    GenerateBlockLine();
-                else
-                    GenerateWallLine();
-
-                CleanOldestLine();
-
-                block = !block;
+                if (currentLength < level.length || infiniteMode)
+                    GenerateLine();
+                else if ((currentLength == level.length || currentLength == level.length + 1) && !infiniteMode)
+                    GenerateArrival();
             }
-            else if ((currentLength == level.length || currentLength == level.length + 1) && !infinite)
-            {
-                currentLength = infinity;
-                lastLine = new bool[columns];
+        }
 
-                obstacles.Add(new GameObject[columns]);
-                obstacles.Add(new GameObject[columns]);
-                nextZ += lineHeight * 2;
+        void GenerateLine()
+        {
+            snakeIndex++;
+            currentLength++;
+            snakePosX =(int)((snake.GetPos().x + (columns / 2f) * lineHeight) / lineHeight);
+            snakePosY = snakeIndex;
+            line = new GameObject[columns];
 
-                InstantiateObstacle(arrivalPrefab, 2, GetZ());
-            }
+            if (block)
+                GenerateBlockLine();
+            else
+                GenerateWallLine();
+
+            CleanOldestLine();
+
+            block = !block;
+        }
+
+        void GenerateArrival()
+        {
+            currentLength = infinity;
+            lastLine = new bool[columns];
+
+            obstacles.Add(new GameObject[columns]);
+            obstacles.Add(new GameObject[columns]);
+            nextZ += lineHeight * 2;
+
+            InstantiateObstacle(arrivalPrefab, 2, GetZ());
         }
 
         void CleanOldestLine()

@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace svb
 {
-
     public class RatioForcer : MonoBehaviour
     {
         float newAspectRatio = 0.5625f;

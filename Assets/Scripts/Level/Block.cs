@@ -7,13 +7,19 @@ namespace svb
 {
     public class Block : MonoBehaviour
     {
-        public Text text;
+        [SerializeField]
+        Text text;
+        [SerializeField]
+        Image star;
 
         public int amount { get; private set; }
+
+        bool turbo;
 
         void Start()
         {
             text.color = LevelGenerator.m.level.colorSet.background;
+            star.color = LevelGenerator.m.level.colorSet.background;
         }
 
         public void Consume()
@@ -21,8 +27,12 @@ namespace svb
             amount--;
             text.text = amount.ToString();
 
-            if (amount <= 0)
+            if (amount <= 0 || GameManager.m.snake.turbo)
             {
+                if (turbo)
+                {
+                    GameManager.m.ActivateTurbo();
+                }
                 gameObject.SetActive(false);
             }
         }
@@ -33,11 +43,21 @@ namespace svb
             text.text = amount.ToString();
 
             var colors = LevelGenerator.m.level.colorSet.blocks;
-            float trunc = 50f / (colors.Length - 1);
+            float trunc = 51f / (colors.Length - 1);
             var t = amount / trunc;
             int a = (int)t;
-            int b = Mathf.Clamp(a + 1, 0, colors.Length - 1);
-            GetComponentInChildren<MeshRenderer>().material.color = Color.Lerp(colors[a], colors[b], (t - a) / trunc );
+            int b = a + 1;
+            GetComponentInChildren<MeshRenderer>().material.color = Color.Lerp(colors[a], colors[b], (t - a));
+
+            if (amount == GameManager.m.turbo)
+            {
+                turbo = true;
+            }
+            else
+            {
+                turbo = false;
+                star.gameObject.SetActive(false);
+            }
         }
     }
 }

@@ -9,5 +9,6 @@ namespace svb
     {
         public ColorSet colorSet;
         public int length = 50;
+        public Stats stats;
     }
 }

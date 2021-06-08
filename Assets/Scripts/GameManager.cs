@@ -19,29 +19,30 @@ namespace svb
 
         [SerializeField]
         Rules rules_;
-
-        public Rules rules
-        {
-            get { return rules_; }
-        }
+        public Rules rules { get { return rules_; } }
 
         [SerializeField]
         Snake snakePrefab;
 
         Snake snake_;
-
-        public Snake snake
-        {
-            get { return snake_; }
-        }
+        public Snake snake { get { return snake_; } }
 
         public bool started { get; private set; }
+
+        public int turbo { get; private set; }
 
         public void Init(int level)
         {
             snake_ = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity);
             LevelGenerator.m.Init(snake_, level);
             Camera.main.GetComponent<CameraManager>().Init();
+            turbo = 25;
+        }
+
+        public void ActivateTurbo()
+        {
+            turbo += 5;
+            snake_.ActivateTurbo();
         }
 
         public void Play()
