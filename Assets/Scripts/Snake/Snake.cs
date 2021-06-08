@@ -25,7 +25,7 @@ namespace svb
 
         public bool turbo { get; private set; }
 
-        void Start()
+        public void Init()
         {
             turbo = false;
 
@@ -37,6 +37,9 @@ namespace svb
 
             for (int i = 0; i < GameManager.m.rules.defaultFollowerAmount; i++)
                 AddPart();
+
+            head.nbPartsText.text = snakeParts.Count.ToString();
+            head.nbPartsText.color = LevelGenerator.m.level.colorSet.walls;
 
             StartCoroutine(PauseCoroutine(1));
         }
@@ -61,6 +64,7 @@ namespace svb
 
         public void AddPart()
         {
+
             SnakePart prev = head;
             if (snakeParts.Count > 0)
                 prev = snakeParts[snakeParts.Count - 1];
@@ -74,6 +78,8 @@ namespace svb
 
             newPart.transform.SetParent(transform);
             snakeParts.Add(newPart);
+
+            head.nbPartsText.text = snakeParts.Count.ToString();
         }
 
         public void RemovePart()
@@ -102,6 +108,8 @@ namespace svb
             followers--;
             snakeParts.RemoveAt(0);
             Destroy(toRemove.gameObject);
+
+            head.nbPartsText.text = snakeParts.Count.ToString();
         }
 
         void Move()

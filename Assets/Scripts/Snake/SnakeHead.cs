@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace svb
 {
@@ -16,12 +17,16 @@ namespace svb
 
         string[] obstacleLayers = { "Wall", "Border", "Block" };
 
+        [HideInInspector]
         public List<Vector3> posHistory = new List<Vector3>();
+        [HideInInspector]
         public List<List<float>> deltasHistory = new List<List<float>>();
 
         bool pauseY = false;
 
         bool turbo;
+
+        public Text nbPartsText;
 
         public void Init(Snake snake)
         {

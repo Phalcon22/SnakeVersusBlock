@@ -36,6 +36,7 @@ namespace svb
             snake_ = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity);
             LevelGenerator.m.Init(snake_, level);
             Camera.main.GetComponent<CameraManager>().Init();
+            snake_.Init();
             turbo = 25;
         }
 
