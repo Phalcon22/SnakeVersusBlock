@@ -29,6 +29,17 @@ namespace svb
             }
 
             GameManager.m.Init(level);
+
+            foreach (var text in GetComponentsInChildren<Text>())
+            {
+                text.color = LevelGenerator.m.level.colorSet.font;
+            }
+
+            foreach (var image in GetComponentsInChildren<Image>())
+            {
+                image.color = LevelGenerator.m.level.colorSet.image;
+            }
+
         }
 
         public void StartButton()

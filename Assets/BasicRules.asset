@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalSpeed: 8
   horizontalSpeed: 25
-  delayBetweenParts: 0.05
+  delayBetweenSnakeParts: 0.05
   defaultFollowerAmount: 20
   destructionDelay: 0.12
   destructionSlowDown: 0.5

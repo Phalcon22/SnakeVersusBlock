@@ -41,12 +41,12 @@ namespace svb
         {
             snake_ = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity);
             LevelGenerator.m.Init(snake_, level);
+            Camera.main.GetComponent<CameraManager>().Init();
         }
 
         public void Play()
         {
             started = true;
-            Camera.main.GetComponent<CameraManager>().Init();
         }
 
         public void Stop()

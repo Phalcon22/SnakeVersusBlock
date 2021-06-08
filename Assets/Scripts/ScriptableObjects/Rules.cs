@@ -12,7 +12,7 @@ namespace svb
         public float horizontalSpeed = 8;
 
         [Space(5)]
-        public float delayBetweenParts = 0.03f;
+        public float delayBetweenSnakeParts = 0.05f;
 
         [Space(5)]
         public int defaultFollowerAmount = 4;

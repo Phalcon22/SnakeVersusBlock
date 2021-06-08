@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 namespace svb
@@ -9,6 +10,11 @@ namespace svb
     {
         protected override void OnShowUp()
         {
+            foreach (var text in GetComponentsInChildren<Text>())
+            {
+                text.color = LevelGenerator.m.level.colorSet.font;
+            }
+
             StartCoroutine(DelayCoroutine());
         }
 

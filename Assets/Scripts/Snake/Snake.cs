@@ -65,7 +65,7 @@ namespace svb
 
             followers++;
             SnakePart newPart = Instantiate(partPrefab, prevPos, head.transform.rotation);
-            newPart.Init(head, followers * GameManager.m.rules.delayBetweenParts);
+            newPart.Init(head, followers * GameManager.m.rules.delayBetweenSnakeParts);
 
             newPart.transform.SetParent(transform);
             snakeParts.Add(newPart);
