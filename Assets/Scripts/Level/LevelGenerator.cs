@@ -56,21 +56,35 @@ namespace svb
         [SerializeField]
         Stats stats;
 
-        [SerializeField]
-        Level[] levels;
+        public Level[] levels;
         public Level level { get; private set; }
 
         int currentLength = 0;
 
+        bool infinite;
+
         public void Init(Snake snake, int levelIndex)
         {
-            nextZ = lineHeight/2f;
+            nextZ = lineHeight/2f + lineHeight * 2;
             snakeIndex = 0;
             block = true;
-            rng = new System.Random(levelIndex);
             this.snake = snake;
+            infinite = levelIndex == -1;
 
-            level = levels[levelIndex];
+            int seed = levelIndex;
+            if (levelIndex < 0)
+                seed = Random.Range(0, 1000000);
+
+            rng = new System.Random(seed);
+
+            if (levelIndex < 0)
+            {
+                level = levels[rng.Next(0, levels.Length)];
+            }
+            else
+            {
+                level = levels[levelIndex];
+            }
 
             for (int i = 0; i < 10; i++)
                 obstacles.Add(new GameObject[columns]);
@@ -78,7 +92,10 @@ namespace svb
 
         void Update()
         {
-            if (snake.GetPos().z >= nextZ && currentLength < level.length)
+            if (!GameManager.m.started)
+                return;
+
+            if (snake.GetPos().z >= nextZ && (currentLength < level.length || infinite))
             {
                 snakeIndex++;
                 currentLength++;
@@ -95,7 +112,7 @@ namespace svb
 
                 block = !block;
             }
-            else if (currentLength == level.length || currentLength == level.length + 1)
+            else if ((currentLength == level.length || currentLength == level.length + 1) && !infinite)
             {
                 currentLength = infinity;
                 lastLine = new bool[columns];

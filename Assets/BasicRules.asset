@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalSpeed: 8
   horizontalSpeed: 25
-  delayBetweenParts: 0.03
-  defaultFollowerAmount: 5
-  destructionRollBack: 150
+  delayBetweenParts: 0.05
+  defaultFollowerAmount: 20
+  destructionDelay: 0.12
+  destructionSlowDown: 0.5
   cameraMaxDistance: 2
   cameraSyncDist: 0.1
+  godMode: 1

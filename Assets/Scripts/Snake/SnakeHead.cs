@@ -146,10 +146,12 @@ namespace svb
 
         float GetYTranslation()
         {
-            if (pauseY)
-                return 0;
+            float y = GameManager.m.rules.verticalSpeed * Time.deltaTime;
 
-            return GameManager.m.rules.verticalSpeed * Time.deltaTime;
+            if (pauseY)
+                y *= GameManager.m.rules.destructionSlowDown;
+
+            return y;
         }
 
         IEnumerator PauseCoroutine(float seconds)

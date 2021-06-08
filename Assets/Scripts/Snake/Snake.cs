@@ -14,7 +14,7 @@ namespace svb
         [SerializeField]
         SnakePart partPrefab;
 
-        int followers = 0;
+        int followers;
 
         [SerializeField]
         SnakeColors colors;
@@ -24,6 +24,8 @@ namespace svb
         bool pause = true;
         void Start()
         {
+            followers = 0;
+
             head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
 
             head.Init(this);
@@ -36,6 +38,9 @@ namespace svb
 
         void Update()
         {
+            if (!GameManager.m.started)
+                return;
+
             head.UpdateMouse();
 
             if (pause)
@@ -70,7 +75,12 @@ namespace svb
         {
             if (snakeParts.Count == 0)
             {
-                //loose
+                if (!GameManager.m.rules.godMode)
+                {
+                    GameManager.m.Stop();
+                    head.GetComponent<MeshRenderer>().enabled = false;
+                    GameObject.Find("GameOverMenu").GetComponent<GameOverMenu>().ShowUp();
+                }
                 return;
             }
 

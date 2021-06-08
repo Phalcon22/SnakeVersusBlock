@@ -10,25 +10,28 @@ namespace svb
 
         Rigidbody rb;
 
-        bool waitMode = false;
+        bool waitMode;
 
-        public Rigidbody leftBorder;
-        public Rigidbody rightBorder;
+        [SerializeField]
+        Rigidbody leftBorder;
+        
+        [SerializeField]
+        Rigidbody rightBorder;
 
         public void Init()
         {
+            waitMode = false;
             snake = GameManager.m.snake;
             rb = GetComponent<Rigidbody>();
 
             Camera.main.backgroundColor = LevelGenerator.m.level.colorSet.background;
-
-            Vector3 startPos = snake.GetPos();
-            startPos.y = rb.position.y;
-            rb.position = startPos;
         }
 
         void Update()
         {
+            if (!GameManager.m.started)
+                return;
+
             Vector3 pos = rb.position;
             float dist = pos.z - snake.GetPos().z;
 

@@ -35,11 +35,23 @@ namespace svb
             get { return snake_; }
         }
 
-        void Start()
+        public bool started { get; private set; }
+
+        public void Init(int level)
         {
             snake_ = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity);
-            LevelGenerator.m.Init(snake_, 0);
+            LevelGenerator.m.Init(snake_, level);
+        }
+
+        public void Play()
+        {
+            started = true;
             Camera.main.GetComponent<CameraManager>().Init();
+        }
+
+        public void Stop()
+        {
+            started = false;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace svb
         {
             if (other.GetComponent<SnakeHead>())
             {
-                Debug.Log("WIN");
+                GameObject.Find("WinMenu").GetComponent<WinMenu>().ShowUp();
             }
         }
     }

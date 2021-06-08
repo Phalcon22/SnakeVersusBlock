@@ -40,6 +40,9 @@ namespace svb
                 started = true;
             }
 
+            if (moveZ == 0)
+                return;
+
             MoveX(index);
             MoveZ(moveZ);
         }
@@ -67,11 +70,14 @@ namespace svb
                 i++;
             }
 
-            pos = head.posHistory[i];
-            pos.z = rb.position.z;
+            if (delta > 0)
+            {
+                pos = head.posHistory[i];
+                pos.z = rb.position.z;
 
-            rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
-            head.deltasHistory[i][index] -= delta;
+                rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
+                head.deltasHistory[i][index] -= delta;
+            }
         }
 
         public void MoveZ(float moveZ)
