@@ -8,23 +8,34 @@ namespace svb
     {
         int i = 0;
 
-        bool started = false;
-        bool pause = true;
-        float delay;
+        public int deltaIndex { get; private set; }
 
-        protected Rigidbody rb;
+        Rigidbody rb;
 
         SnakeHead head;
 
-        public void Init(SnakeHead head, float delay)
+        public void Init(SnakeHead head, SnakePart tail, int deltaIndex)
         {
             rb = GetComponent<Rigidbody>();
 
+            this.deltaIndex = deltaIndex;
             this.head = head;
-            this.delay = delay;
-            i = head.posHistory.Count - 1;
 
             GetComponent<MeshRenderer>().material.color = GameManager.m.snake.GetNewColor();
+
+            i = tail.GetMoveIndex();
+            if (tail == head)
+                i = head.posHistory.Count - 2;
+            
+            for (; i > 0;  i--)
+            {
+                if (head.posHistory[i].z <= tail.GetComponent<Rigidbody>().position.z - GetComponent<BoxCollider>().bounds.size.z *0.9f)
+                {
+                    break;
+                }
+            }
+
+            rb.position = head.posHistory[i];
         }
 
         public int GetMoveIndex()
@@ -32,70 +43,55 @@ namespace svb
             return i;
         }
 
-        public void Move(int index, float moveZ)
+        public void Move(float speed)
         {
-            if (!started)
-            {
-                StartCoroutine(InitPauseCoroutine(delay));
-                started = true;
-            }
-
-            if (moveZ == 0)
-                return;
-
-            MoveX(index);
-            MoveZ(moveZ);
-        }
-
-        public void MoveX(int index)
-        {
-            if (pause)
-                return;
-
             if (i < 0)
             {
                 i++;
                 return;
             }
 
-            float delta = Time.deltaTime;
-            Vector3 pos;
-            while (delta >= head.deltasHistory[i][index])
-            {
-                pos = head.posHistory[i];
-                pos.z = rb.position.z;
-
-                rb.MovePosition(pos);
-                delta -= head.deltasHistory[i][index];
+            while (i < head.posHistory.Count && head.speedHistory[i] == 0)
                 i++;
-            }
+            if (i >= head.posHistory.Count)
+                return;
 
-            if (delta > 0)
+            float compensativeSpeed = speed / head.speedHistory[i];
+            float delta = Time.deltaTime;
+            float deltaXSpeed = delta * compensativeSpeed;
+            while (i < head.posHistory.Count && deltaXSpeed >= head.deltasHistory[i][deltaIndex])
             {
-                pos = head.posHistory[i];
-                pos.z = rb.position.z;
+                rb.MovePosition(head.posHistory[i]);
+                deltaXSpeed -= head.deltasHistory[i][deltaIndex];
+                i++;
 
-                rb.MovePosition(Vector3.Lerp(rb.position, pos, delta / head.deltasHistory[i][index]));
-                head.deltasHistory[i][index] -= delta;
+                deltaXSpeed /= compensativeSpeed;
+                delta = deltaXSpeed;
+                while (i < head.posHistory.Count && head.speedHistory[i] == 0)
+                    i++;
+                if (i >= head.posHistory.Count || i < 0)
+                    return;
+
+                compensativeSpeed = speed / head.speedHistory[i];
+                deltaXSpeed *= compensativeSpeed;
             }
-        }
 
-        public void MoveZ(float moveZ)
-        {
-            rb.MovePosition(rb.position + new Vector3(0, 0, moveZ));
-        }
+            deltaXSpeed /= compensativeSpeed;
+            delta = deltaXSpeed;
+            while (i < head.posHistory.Count && head.speedHistory[i] == 0)
+                i++;
+            if (i >= head.posHistory.Count || i < 0)
+                return;
 
-        IEnumerator InitPauseCoroutine(float seconds)
-        {
-            pause = true;
-            yield return new WaitForSeconds(seconds);
+            compensativeSpeed = speed / head.speedHistory[i];
+            deltaXSpeed *= compensativeSpeed;
 
-            i = head.posHistory.Count - 1;
-            for (float timer = 0; i >= 0 && timer <= delay; i--)
-                timer += head.deltasHistory[i][0];
 
-            pause = false;
+            if (deltaXSpeed > 0)
+            {
+                rb.MovePosition(Vector3.Lerp(rb.position, head.posHistory[i], deltaXSpeed / head.deltasHistory[i][deltaIndex]));
+                head.deltasHistory[i][deltaIndex] -= deltaXSpeed;
+            }
         }
     }
-
 }

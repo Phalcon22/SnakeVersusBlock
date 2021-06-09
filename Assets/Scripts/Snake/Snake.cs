@@ -7,7 +7,7 @@ namespace svb
     public class Snake : MonoBehaviour
     {
         SnakeHead head = null;
-        List<SnakePart> snakeParts = new List<SnakePart>();
+        public List<SnakePart> snakeParts = new List<SnakePart>();
 
         [SerializeField]
         SnakeHead headPrefab;
@@ -62,9 +62,15 @@ namespace svb
             return followers;
         }
 
+        public void AddPart(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+                AddPart();
+        }
+
+        int deltaIndex = 0;
         public void AddPart()
         {
-
             SnakePart prev = head;
             if (snakeParts.Count > 0)
                 prev = snakeParts[snakeParts.Count - 1];
@@ -73,15 +79,16 @@ namespace svb
             prevPos.z -= prev.GetComponent<BoxCollider>().bounds.extents.z * 2;
 
             followers++;
-            SnakePart newPart = Instantiate(partPrefab, prevPos, head.transform.rotation);
-            newPart.Init(head, followers * GameManager.m.rules.delayBetweenSnakeParts);
-
+            SnakePart newPart = Instantiate(partPrefab);
             newPart.transform.SetParent(transform);
+            newPart.Init(head, prev, ++deltaIndex);
+
             snakeParts.Add(newPart);
 
             head.nbPartsText.text = snakeParts.Count.ToString();
         }
 
+        bool reMove = false;
         public void RemovePart()
         {
             if (snakeParts.Count == 0)
@@ -95,30 +102,24 @@ namespace svb
                 return;
             }
 
-            SnakePart toRemove = snakeParts[0];
-
-            head.GetComponent<Rigidbody>().position = toRemove.GetComponent<Rigidbody>().position;
-
-            int amount = head.posHistory.Count - (toRemove.GetMoveIndex() + 1);
-            head.posHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
-            head.deltasHistory.RemoveRange(toRemove.GetMoveIndex() + 1, amount);
-
-            head.GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
-
             followers--;
-            snakeParts.RemoveAt(0);
-            Destroy(toRemove.gameObject);
-
-            head.nbPartsText.text = snakeParts.Count.ToString();
+            reMove = true;
         }
 
         void Move()
         {
-            var moveZ = head.Move();
+            var speed = head.Move();
+
+            if (reMove)
+            {
+                speed = head.Move();
+                reMove = false;
+            }
+
 
             for (int i = 0; i < followers; i++)
             {
-                snakeParts[i].Move(i + 1, moveZ);
+                snakeParts[i].Move(speed / GameManager.m.rules.verticalSpeed);
             }
         }
 

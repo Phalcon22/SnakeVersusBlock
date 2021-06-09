@@ -40,7 +40,7 @@ namespace svb
 
             if (waitMode)
             {
-                if (Mathf.Abs(dist) < GameManager.m.rules.cameraSyncDist)
+                if (dist < GameManager.m.rules.cameraSyncDist)
                 {
                     waitMode = false;
                     Vector3 newPos = pos;

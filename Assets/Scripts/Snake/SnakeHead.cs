@@ -13,7 +13,8 @@ namespace svb
         float targetX;
 
         Snake snake;
-        BoxCollider col;
+        BoxCollider col_;
+        Rigidbody rb_;
 
         string[] obstacleLayers = { "Wall", "Border", "Block" };
 
@@ -21,6 +22,7 @@ namespace svb
         public List<Vector3> posHistory = new List<Vector3>();
         [HideInInspector]
         public List<List<float>> deltasHistory = new List<List<float>>();
+        public List<float> speedHistory = new List<float>();
 
         bool pauseY = false;
 
@@ -33,12 +35,25 @@ namespace svb
             turbo = false;
 
             this.snake = snake;
-            rb = GetComponent<Rigidbody>();
-            col = GetComponent<BoxCollider>();
+            rb_ = GetComponent<Rigidbody>();
+            col_ = GetComponent<BoxCollider>();
 
             transform.SetParent(snake.transform);
 
             GetComponent<MeshRenderer>().material.color = snake.GetNewColor();
+
+            float height = GameManager.m.rules.verticalSpeed * Time.deltaTime;
+            Vector3 pos = rb_.position;
+            for (int i = 0; i < 2500; i++)
+            {
+                pos.z -= height;
+                posHistory.Insert(0, pos);
+                List<float> f = new List<float>();
+                for (int j = 0; j < 1000; j++)
+                    f.Add(Time.deltaTime);
+                deltasHistory.Insert(0, f);
+                speedHistory.Insert(0, 1);
+            }
         }
 
         public void UpdateMouse()
@@ -51,12 +66,12 @@ namespace svb
 
         void Translate(Vector3 translation)
         {
-            rb.MovePosition(rb.position + translation);
+            rb_.MovePosition(rb_.position + translation);
         }
 
         public Vector3 GetPos()
         {
-            return rb.position;
+            return rb_.position;
         }
 
         public float Move()
@@ -66,22 +81,27 @@ namespace svb
             Vector3 v = new Vector3(0, 0, translation.z);
 
             Translate(h);
-            var horizontalColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask(obstacleLayers));
-
+            var horizontalColliders = Physics.OverlapBox(col_.bounds.center, col_.bounds.extents, Quaternion.identity, LayerMask.GetMask(obstacleLayers));
             if (horizontalColliders.Length > 0)
             {
-                targetX = rb.position.x;
                 Translate(-h);
+                targetX = rb_.position.x;
                 translation.x = 0;
             }
 
             Translate(v);
-            var verticalColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask(obstacleLayers));
-
+            var verticalColliders = Physics.OverlapBox(col_.bounds.center, col_.bounds.extents, Quaternion.identity, LayerMask.GetMask(obstacleLayers));
             if (verticalColliders.Length > 0)
             {
                 Translate(-v);
                 translation.z = 0;
+            }
+
+            var powerUpColliders = Physics.OverlapBox(col_.bounds.center, col_.bounds.extents, Quaternion.identity, LayerMask.GetMask("PowerUp"));
+            foreach (Collider powerUp in powerUpColliders)
+            {
+                snake.AddPart(powerUp.transform.parent.GetComponent<PowerUp>().amount);
+                powerUp.transform.parent.gameObject.SetActive(false);
             }
 
             bool removePart = false;
@@ -95,41 +115,57 @@ namespace svb
                 }
             }
 
-            if (removePart)
+            if (removePart && snake.snakeParts.Count > 0)
             {
                 snake.RemovePart();
+
+                SnakePart toRemove = snake.snakeParts[0];
+
+                rb_.position = toRemove.GetComponent<Rigidbody>().position;
+
+                int amount = (posHistory.Count - 1) - (toRemove.GetMoveIndex() - 1);
+                posHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+                deltasHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+                speedHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+
+                posHistory[toRemove.GetMoveIndex() - 1] = rb_.position;
+                float newDelta = deltasHistory[deltasHistory.Count - 1][0] - deltasHistory[deltasHistory.Count - 1][toRemove.deltaIndex];
+                for (int i = 0; i < deltasHistory[deltasHistory.Count - 1].Count; i++)
+                    deltasHistory[deltasHistory.Count - 1][i] = newDelta;
+
+                GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
+
+                snake.snakeParts.RemoveAt(0);
+                Destroy(toRemove.gameObject);
+
+                nbPartsText.text = snake.snakeParts.Count.ToString();
+
                 StartCoroutine(PauseCoroutine(GameManager.m.rules.destructionDelay));
             }
-
-            var powerUpColliders = Physics.OverlapBox(col.bounds.center, col.bounds.extents, Quaternion.identity, LayerMask.GetMask("PowerUp"));
-
-            foreach (Collider powerUp in powerUpColliders)
+            else
             {
-                for (int i = 0; i < powerUp.transform.parent.GetComponent<PowerUp>().amount; i++)
-                    snake.AddPart();
-                powerUp.transform.parent.gameObject.SetActive(false);
+                posHistory.Add(rb_.position);
+                List<float> f = new List<float>();
+                for (int i = 0; i < 1000; i++)
+                    f.Add(Time.deltaTime);
+                deltasHistory.Add(f);
+                speedHistory.Add(translation.z / Time.deltaTime / GameManager.m.rules.verticalSpeed);
             }
 
-            posHistory.Add(rb.position);
-            List<float> f = new List<float>();
-            for (int i = 0; i < 1000; i++)
-                f.Add(Time.deltaTime);
-            deltasHistory.Add(f);
-
-            return translation.z;
+            return translation.z / Time.deltaTime;
         }
 
         float GetMouseX()
         {
             Vector3 mousePos = Input.mousePosition;
-            mousePos.z = Camera.main.transform.position.y - rb.position.y;
+            mousePos.z = Camera.main.transform.position.y - rb_.position.y;
             return Camera.main.ScreenToWorldPoint(mousePos).x;
         }
 
         void OnButtonDown()
         {
             startMouseX = GetMouseX();
-            startSnakeX = rb.position.x;
+            startSnakeX = rb_.position.x;
         }
 
         void OnButtonHoldDown()
@@ -140,7 +176,7 @@ namespace svb
 
         float GetXTranslation()
         {
-            Vector3 pos = rb.position;
+            Vector3 pos = rb_.position;
 
             float direction = (pos.x < targetX) ? 1 : -1;
             float translation = direction * GameManager.m.rules.horizontalSpeed * Time.deltaTime;
