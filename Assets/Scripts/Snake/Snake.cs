@@ -14,8 +14,6 @@ namespace svb
         [SerializeField]
         SnakePart partPrefab;
 
-        int followers;
-
         [SerializeField]
         SnakeColors colors;
 
@@ -28,8 +26,6 @@ namespace svb
         public void Init()
         {
             turbo = false;
-
-            followers = 0;
 
             head = Instantiate(headPrefab, Vector3.zero, Quaternion.identity);
 
@@ -59,7 +55,7 @@ namespace svb
 
         public int GetFollower()
         {
-            return followers;
+            return snakeParts.Count;
         }
 
         public void AddPart(int amount)
@@ -77,7 +73,6 @@ namespace svb
             Vector3 prevPos = prev.GetComponent<Rigidbody>().position;
             prevPos.z -= prev.GetComponent<BoxCollider>().bounds.extents.z * 2;
 
-            followers++;
             SnakePart newPart = Instantiate(partPrefab);
             newPart.transform.SetParent(transform);
             newPart.Init(head, prev);
@@ -101,7 +96,6 @@ namespace svb
                 return;
             }
 
-            followers--;
             reMove = true;
         }
 
@@ -123,7 +117,7 @@ namespace svb
                 reMove = false;
             }
 
-            for (int i = 0; i < followers; i++)
+            for (int i = 0; i < snakeParts.Count; i++)
             {
                 snakeParts[i].Move(speed / GameManager.m.rules.verticalSpeed);
             }

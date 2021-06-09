@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0e1dbca5f14a64eb9e5a1784d2ebad, type: 3}
   m_Name: BasicRules
   m_EditorClassIdentifier: 
-  verticalSpeed: 8
+  verticalSpeed: 6
   horizontalSpeed: 25
   defaultFollowerAmount: 5
-  destructionDelay: 0.3
-  destructionSlowDown: 0.4
+  destructionDelay: 0.4
+  destructionSlowDown: 0.35
   cameraMaxDistance: 2
   cameraSyncDist: 0.1
-  godMode: 1
+  godMode: 0

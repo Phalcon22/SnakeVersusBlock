@@ -27,7 +27,7 @@ namespace svb
             
             for (; i > 0;  i--)
             {
-                if (head.posHistory[i].z <= tail.GetComponent<Rigidbody>().position.z - GetComponent<BoxCollider>().bounds.size.z *0.9f)
+                if (head.posHistory[i].z <= tail.GetComponent<Rigidbody>().position.z - GetComponent<BoxCollider>().bounds.size.z * 0.75f)
                 {
                     break;
                 }

@@ -112,31 +112,34 @@ namespace svb
                 }
             }
 
-            if (removePart && snake.snakeParts.Count > 0)
+            if (removePart)
             {
                 snake.RemovePart();
 
-                SnakePart toRemove = snake.snakeParts[0];
+                if (snake.snakeParts.Count > 0)
+                {
+                    SnakePart toRemove = snake.snakeParts[0];
 
-                rb_.position = toRemove.GetComponent<Rigidbody>().position;
+                    rb_.position = toRemove.GetComponent<Rigidbody>().position;
 
-                int amount = (posHistory.Count - 1) - (toRemove.GetMoveIndex() - 1);
-                posHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
-                deltasHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
-                speedHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+                    int amount = (posHistory.Count - 1) - (toRemove.GetMoveIndex() - 1);
+                    posHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+                    deltasHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
+                    speedHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
 
-                posHistory[toRemove.GetMoveIndex() - 1] = rb_.position;
-                float newDelta = deltasHistory[deltasHistory.Count - 1] - toRemove.remainingDelta;
-                deltasHistory[deltasHistory.Count - 1] = newDelta;
+                    posHistory[toRemove.GetMoveIndex() - 1] = rb_.position;
+                    float newDelta = deltasHistory[deltasHistory.Count - 1] - toRemove.remainingDelta;
+                    deltasHistory[deltasHistory.Count - 1] = newDelta;
 
-                GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
+                    GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
 
-                snake.snakeParts.RemoveAt(0);
-                Destroy(toRemove.gameObject);
+                    snake.snakeParts.RemoveAt(0);
+                    Destroy(toRemove.gameObject);
 
-                nbPartsText.text = snake.snakeParts.Count.ToString();
+                    nbPartsText.text = snake.snakeParts.Count.ToString();
 
-                StartCoroutine(PauseCoroutine(GameManager.m.rules.destructionDelay));
+                    StartCoroutine(PauseCoroutine(GameManager.m.rules.destructionDelay));
+                }
             }
             else
             {

@@ -42,7 +42,7 @@ namespace svb
 
         const int columns = 5;
         const float lineHeight = 1.5f;
-        const int ahead = 6;
+        const int ahead = 7;
         const int infinity = 9999;
         const int cleanDist = 20;
 
@@ -395,6 +395,15 @@ namespace svb
             }
             else if (max > 0)
                 line[maxIndex].GetComponent<Block>().SetAmount(rng.Next(1, max + 1));
+            else
+            {
+                for (int i = 0; i < columns; i++)
+                {
+                    Destroy(line[i].gameObject);
+                    line[i] = null;
+                    curLine[i] = false;
+                }
+            }
         }
 
         enum EDirection
@@ -408,10 +417,8 @@ namespace svb
         {
             int res = -infinity;
 
-            if (dist > ahead * 2)
-            {
-                return -9997;
-            }
+            if (dist < ahead * 2 && y < snakePosY)
+                return res;
 
             if (snakePosX == x && snakePosY == y)
                 return snake.GetFollower();
@@ -424,18 +431,18 @@ namespace svb
             if (lateralMoveInRow < 2 && res < 0 && x + 1 < columns && from != EDirection.RIGHT)
             {
                 GameObject obstacle = obstacles[y][x + 1];
-                if (!obstacle || !obstacle.GetComponent<Wall>())
+                if ((!obstacle || !obstacle.GetComponent<Wall>()) && (!obstacles[y][x] || !obstacles[y][x].GetComponent<Block>()))
                 {
-                    res = Mathf.Max(res, Dfs(x + 1, y, dist + 1, EDirection.LEFT, lateralMoveInRow));
+                    res = Mathf.Max(res, Dfs(x + 1, y, dist + 1, EDirection.LEFT, lateralMoveInRow + 1));
                 }
             }
 
             if (lateralMoveInRow < 2 && res < 0 && x - 1 >= 0 && from != EDirection.LEFT)
             {
                 GameObject obstacle = obstacles[y][x];
-                if (!obstacle || !obstacle.GetComponent<Wall>())
+                if (!obstacle || (!obstacle.GetComponent<Wall>() && !obstacle.GetComponent<Block>()))
                 {
-                    res = Mathf.Max(res, Dfs(x - 1, y, dist + 1, EDirection.RIGHT, lateralMoveInRow));
+                    res = Mathf.Max(res, Dfs(x - 1, y, dist + 1, EDirection.RIGHT, lateralMoveInRow +1));
                 }
             }
 
@@ -444,7 +451,7 @@ namespace svb
                 if (obstacles[y][x].GetComponent<Block>())
                     res -= obstacles[y][x].GetComponent<Block>().amount;
                 else if (obstacles[y][x].GetComponent<PowerUp>())
-                    res += obstacles[y][x].GetComponent<PowerUp>().amount;
+                    res += obstacles[y][x].GetComponent<PowerUp>().amount - 1;
             }
 
             return res;
