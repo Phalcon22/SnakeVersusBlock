@@ -68,7 +68,6 @@ namespace svb
                 AddPart();
         }
 
-        int deltaIndex = 0;
         public void AddPart()
         {
             SnakePart prev = head;
@@ -81,7 +80,7 @@ namespace svb
             followers++;
             SnakePart newPart = Instantiate(partPrefab);
             newPart.transform.SetParent(transform);
-            newPart.Init(head, prev, ++deltaIndex);
+            newPart.Init(head, prev);
 
             snakeParts.Add(newPart);
 
@@ -108,6 +107,14 @@ namespace svb
 
         void Move()
         {
+            if (head.posHistory.Count > 5000 && (snakeParts.Count == 0 || snakeParts[snakeParts.Count - 1].GetMoveIndex() + 1 > head.posHistory.Count - 5000))
+            {
+                head.posHistory.RemoveAt(0);
+                head.deltasHistory.RemoveAt(0);
+                head.speedHistory.RemoveAt(0);
+                DecrementIndex();
+            }
+
             var speed = head.Move();
 
             if (reMove)
@@ -115,7 +122,6 @@ namespace svb
                 speed = head.Move();
                 reMove = false;
             }
-
 
             for (int i = 0; i < followers; i++)
             {
@@ -165,6 +171,12 @@ namespace svb
             turbo = false;
 
             head.DeactivateTurbo();
+        }
+
+        public void DecrementIndex()
+        {
+            foreach (var snake in snakeParts)
+                snake.DecrementMoveIndex();
         }
     }
 }

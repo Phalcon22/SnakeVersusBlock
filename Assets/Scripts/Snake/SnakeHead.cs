@@ -21,7 +21,7 @@ namespace svb
         [HideInInspector]
         public List<Vector3> posHistory = new List<Vector3>();
         [HideInInspector]
-        public List<List<float>> deltasHistory = new List<List<float>>();
+        public List<float> deltasHistory = new List<float>();
         public List<float> speedHistory = new List<float>();
 
         bool pauseY = false;
@@ -48,10 +48,7 @@ namespace svb
             {
                 pos.z -= height;
                 posHistory.Insert(0, pos);
-                List<float> f = new List<float>();
-                for (int j = 0; j < 1000; j++)
-                    f.Add(Time.deltaTime);
-                deltasHistory.Insert(0, f);
+                deltasHistory.Insert(0, Time.deltaTime);
                 speedHistory.Insert(0, 1);
             }
         }
@@ -129,9 +126,8 @@ namespace svb
                 speedHistory.RemoveRange(toRemove.GetMoveIndex(), amount);
 
                 posHistory[toRemove.GetMoveIndex() - 1] = rb_.position;
-                float newDelta = deltasHistory[deltasHistory.Count - 1][0] - deltasHistory[deltasHistory.Count - 1][toRemove.deltaIndex];
-                for (int i = 0; i < deltasHistory[deltasHistory.Count - 1].Count; i++)
-                    deltasHistory[deltasHistory.Count - 1][i] = newDelta;
+                float newDelta = deltasHistory[deltasHistory.Count - 1] - toRemove.remainingDelta;
+                deltasHistory[deltasHistory.Count - 1] = newDelta;
 
                 GetComponent<MeshRenderer>().material.color = toRemove.GetComponent<MeshRenderer>().material.color;
 
@@ -145,10 +141,7 @@ namespace svb
             else
             {
                 posHistory.Add(rb_.position);
-                List<float> f = new List<float>();
-                for (int i = 0; i < 1000; i++)
-                    f.Add(Time.deltaTime);
-                deltasHistory.Add(f);
+                deltasHistory.Add(Time.deltaTime);
                 speedHistory.Add(translation.z / Time.deltaTime / GameManager.m.rules.verticalSpeed);
             }
 
@@ -197,9 +190,7 @@ namespace svb
                 y *= GameManager.m.rules.destructionSlowDown;
 
             if (turbo)
-            {
                 y *= 2;
-            }
 
             return y;
         }

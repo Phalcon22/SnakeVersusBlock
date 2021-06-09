@@ -8,20 +8,18 @@ namespace svb
     {
         int i = 0;
 
-        public int deltaIndex { get; private set; }
-
         Rigidbody rb;
-
         SnakeHead head;
 
-        public void Init(SnakeHead head, SnakePart tail, int deltaIndex)
+        public float remainingDelta { get; private set; }
+        public void Init(SnakeHead head, SnakePart tail)
         {
             rb = GetComponent<Rigidbody>();
 
-            this.deltaIndex = deltaIndex;
             this.head = head;
 
             GetComponent<MeshRenderer>().material.color = GameManager.m.snake.GetNewColor();
+
 
             i = tail.GetMoveIndex();
             if (tail == head)
@@ -36,6 +34,7 @@ namespace svb
             }
 
             rb.position = head.posHistory[i];
+            remainingDelta = head.deltasHistory[i];
         }
 
         public int GetMoveIndex()
@@ -43,54 +42,68 @@ namespace svb
             return i;
         }
 
+        public void DecrementMoveIndex()
+        {
+            i--;
+        }
+
+        bool error;
         public void Move(float speed)
         {
-            if (i < 0)
+            if (error && i < head.posHistory.Count)
+                remainingDelta = head.deltasHistory[i];
+
+            while (i < head.posHistory.Count && head.speedHistory[i] == 0)
             {
                 i++;
+                if (i < head.posHistory.Count)
+                    remainingDelta = head.deltasHistory[i];
+            }
+            if (i >= head.posHistory.Count)
+            {
+                remainingDelta = 0;
+                error = true;
                 return;
             }
 
-            while (i < head.posHistory.Count && head.speedHistory[i] == 0)
-                i++;
-            if (i >= head.posHistory.Count)
-                return;
-
             float compensativeSpeed = speed / head.speedHistory[i];
-            float delta = Time.deltaTime;
-            float deltaXSpeed = delta * compensativeSpeed;
-            while (i < head.posHistory.Count && deltaXSpeed >= head.deltasHistory[i][deltaIndex])
+            float deltaXSpeed = Time.deltaTime * compensativeSpeed;
+            while (i < head.posHistory.Count && deltaXSpeed >= remainingDelta)
             {
                 rb.MovePosition(head.posHistory[i]);
-                deltaXSpeed -= head.deltasHistory[i][deltaIndex];
+                deltaXSpeed -= remainingDelta;
+
                 i++;
+                if (i < head.posHistory.Count)
+                    remainingDelta = head.deltasHistory[i];
+
+                while (i < head.posHistory.Count && head.speedHistory[i] == 0)
+                {
+                    i++;
+                    if (i < head.posHistory.Count)
+                        remainingDelta = head.deltasHistory[i];
+                }
+                if (i >= head.posHistory.Count)
+                {
+                    remainingDelta = 0;
+                    error = true;
+                    return;
+                }
 
                 deltaXSpeed /= compensativeSpeed;
-                delta = deltaXSpeed;
-                while (i < head.posHistory.Count && head.speedHistory[i] == 0)
-                    i++;
-                if (i >= head.posHistory.Count || i < 0)
-                    return;
-
                 compensativeSpeed = speed / head.speedHistory[i];
                 deltaXSpeed *= compensativeSpeed;
             }
 
             deltaXSpeed /= compensativeSpeed;
-            delta = deltaXSpeed;
-            while (i < head.posHistory.Count && head.speedHistory[i] == 0)
-                i++;
-            if (i >= head.posHistory.Count || i < 0)
-                return;
-
             compensativeSpeed = speed / head.speedHistory[i];
             deltaXSpeed *= compensativeSpeed;
 
 
             if (deltaXSpeed > 0)
             {
-                rb.MovePosition(Vector3.Lerp(rb.position, head.posHistory[i], deltaXSpeed / head.deltasHistory[i][deltaIndex]));
-                head.deltasHistory[i][deltaIndex] -= deltaXSpeed;
+                rb.MovePosition(Vector3.Lerp(rb.position, head.posHistory[i], deltaXSpeed / remainingDelta));
+                remainingDelta -= deltaXSpeed;
             }
         }
     }

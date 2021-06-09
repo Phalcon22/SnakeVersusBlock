@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35bab5f56d75f6a4d9a5a6e2f88be6d7, type: 3}
   m_Name: Level5
   m_EditorClassIdentifier: 
-  colorSet: {fileID: 0}
+  colorSet: {fileID: 11400000, guid: 26e2dce3ea3ede84e9b1044906c325b6, type: 2}
   length: 50
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: c0643759428469c46816ae32a6f62539, type: 2}

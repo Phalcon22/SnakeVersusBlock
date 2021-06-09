@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalSpeed: 8
   horizontalSpeed: 25
-  defaultFollowerAmount: 200
+  defaultFollowerAmount: 5
   destructionDelay: 0.3
   destructionSlowDown: 0.4
   cameraMaxDistance: 2
