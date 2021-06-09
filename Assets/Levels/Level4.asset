@@ -9,14 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f0e1dbca5f14a64eb9e5a1784d2ebad, type: 3}
-  m_Name: BasicRules
+  m_Script: {fileID: 11500000, guid: 35bab5f56d75f6a4d9a5a6e2f88be6d7, type: 3}
+  m_Name: Level4
   m_EditorClassIdentifier: 
-  verticalSpeed: 8
-  horizontalSpeed: 25
-  defaultFollowerAmount: 200
-  destructionDelay: 0.3
-  destructionSlowDown: 0.4
-  cameraMaxDistance: 2
-  cameraSyncDist: 0.1
-  godMode: 1
+  colorSet: {fileID: 11400000, guid: 513da73944765194bb872e598520cb25, type: 2}
+  length: 50
+  stats: {fileID: 11400000, guid: c0643759428469c46816ae32a6f62539, type: 2}

@@ -36,7 +36,7 @@ namespace svb
         void InitColors()
         {
             foreach (var text in GetComponentsInChildren<Text>())
-                text.color = LevelGenerator.m.level.colorSet.font;
+                text.color = LevelGenerator.m.level.colorSet.walls;
 
             foreach (var image in GetComponentsInChildren<Image>())
                 image.color = LevelGenerator.m.level.colorSet.image;

@@ -10,10 +10,6 @@ namespace svb
         [Header("Snake")]
         public float verticalSpeed = 8;
         public float horizontalSpeed = 8;
-
-        [Space(5)]
-        public float delayBetweenSnakeParts = 0.05f;
-
         [Space(5)]
         public int defaultFollowerAmount = 4;
         public float destructionDelay = 0.12f;

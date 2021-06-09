@@ -12,7 +12,7 @@ namespace svb
         {
             foreach (var text in GetComponentsInChildren<Text>())
             {
-                text.color = LevelGenerator.m.level.colorSet.font;
+                text.color = LevelGenerator.m.level.colorSet.walls;
             }
 
             StartCoroutine(DelayCoroutine());
