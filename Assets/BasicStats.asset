@@ -20,9 +20,9 @@ MonoBehaviour:
   OneBlockPercent: 40
   TwoBlockPercent: 38
   FiveBlockPercent: 22
-  blockFollowsWall: 79
+  blockFollowsWall: 50
   shortWallPercent: 50
   ZeroWallPercent: 32
   OneWallPercent: 44
   TwoWallPercent: 19
-  wallFollowsBlock: 62
+  wallFollowsBlock: 50

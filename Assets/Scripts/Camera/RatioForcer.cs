@@ -10,13 +10,14 @@ namespace svb
 
         void Start()
         {
-            var variance = newAspectRatio / Camera.main.aspect;
+            var camera = GetComponent<Camera>();
+            var variance = newAspectRatio / camera.aspect;
             if (variance < 1.0)
-                Camera.main.rect = new Rect((1 - variance) / 2f, 0, variance, 1);
+                camera.rect = new Rect((1 - variance) / 2f, 0, variance, 1);
             else
             {
                 variance = 1.0f / variance;
-                Camera.main.rect = new Rect(0, (1 - variance) / 2f, 1, variance);
+                camera.rect = new Rect(0, (1 - variance) / 2f, 1, variance);
             }
         }
     }
